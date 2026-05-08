@@ -1,0 +1,15 @@
+# Agent Instructions
+
+## Agent skills
+
+### Issue tracker
+
+Issues and PRDs live as local markdown files under `.scratch/`; Git is for version control, not issue tracking. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five-role triage vocabulary is used unchanged. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context repo: domain language lives in `CONTEXT.md`, ADRs in `docs/adr/`, plans in `docs/plan/`. See `docs/agents/domain.md`.
