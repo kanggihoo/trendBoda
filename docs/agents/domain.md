@@ -15,6 +15,7 @@ This is a single-context repo.
 - Read `CONTEXT.md` before naming domain concepts or proposing behavior.
 - Read relevant ADRs in `docs/adr/` before changing architecture, integration patterns, deployment, data access, AI usage, or provider strategy.
 - Read relevant plans in `docs/plan/` before turning planned work into issues or implementation tasks.
+- Read `docs/agents/backend.md` before changing backend Python setup, tests, migrations, or local backend tooling.
 
 If any of these files do not exist, proceed silently. The producer skill creates them lazily when terms or decisions get resolved.
 

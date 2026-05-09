@@ -13,3 +13,7 @@ Default five-role triage vocabulary is used unchanged. See `docs/agents/triage-l
 ### Domain docs
 
 Single-context repo: domain language lives in `CONTEXT.md`, ADRs in `docs/adr/`, plans in `docs/plan/`. See `docs/agents/domain.md`.
+
+### Backend setup
+
+Backend Python setup, uv commands, tests, migrations, and local tooling conventions live in `docs/agents/backend.md`.

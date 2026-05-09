@@ -1,0 +1,1 @@
+"""TrendBoda backend package."""

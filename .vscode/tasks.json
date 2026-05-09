@@ -1,0 +1,49 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "backend: sync",
+      "type": "shell",
+      "command": "uv --directory backend sync",
+      "problemMatcher": []
+    },
+    {
+      "label": "backend: test",
+      "type": "shell",
+      "command": "uv --directory backend run pytest",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "backend: test integration",
+      "type": "shell",
+      "command": "uv --directory backend run pytest -m integration",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "backend: lint",
+      "type": "shell",
+      "command": "uv --directory backend run ruff check .",
+      "problemMatcher": []
+    },
+    {
+      "label": "backend: format",
+      "type": "shell",
+      "command": "uv --directory backend run ruff format .",
+      "problemMatcher": []
+    },
+    {
+      "label": "backend: typecheck",
+      "type": "shell",
+      "command": "uv --directory backend run pyright",
+      "problemMatcher": []
+    },
+    {
+      "label": "dbmate: up",
+      "type": "shell",
+      "command": "dbmate --env-file .env --migrations-dir db/migrations up",
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+backend/.venv/
+backend/htmlcov/
+backend/.pytest_cache/
+backend/.ruff_cache/
+node_modules/
+.next/
+dist/
+build/
+uv.lock
