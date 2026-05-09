@@ -28,16 +28,16 @@ Implement the first real Source path for TrendBoda by fetching GeekNews RSS, par
 
 ## Acceptance criteria
 
-- [ ] GeekNews RSS is fetched from `https://feeds.feedburner.com/geeknews-feed` through a provider adapter.
-- [ ] RSS XML is normalized into stable application-level item data.
-- [ ] GeekNews items are stored in Postgres with duplicate prevention.
-- [ ] Fetch runs are recorded with enough data to inspect freshness and failures later.
-- [ ] FastAPI exposes endpoints to manually fetch GeekNews and list stored items.
-- [ ] The dashboard shows recent GeekNews items with title, source link, publish time, and fetch time.
-- [ ] Re-running the fetch does not create duplicate dashboard rows for the same item.
-- [ ] Parser tests cover valid RSS, missing optional fields, HTML entities, duplicate identifiers, item ordering, and malformed XML behavior.
-- [ ] Repository tests cover insertion, duplicate prevention, and fetch run recording.
-- [ ] API and dashboard tests cover successful, empty, and error states.
+- [x] GeekNews RSS is fetched from `https://feeds.feedburner.com/geeknews-feed` through a provider adapter.
+- [x] RSS XML is normalized into stable application-level item data.
+- [x] GeekNews items are stored in Postgres with duplicate prevention.
+- [x] Fetch runs are recorded with enough data to inspect freshness and failures later.
+- [x] FastAPI exposes endpoints to manually fetch GeekNews and list stored items.
+- [x] The dashboard shows recent GeekNews items with title, source link, publish time, and fetch time.
+- [x] Re-running the fetch does not create duplicate dashboard rows for the same item.
+- [x] Parser tests cover valid RSS, missing optional fields, HTML entities, duplicate identifiers, item ordering, and malformed XML behavior.
+- [x] Repository tests cover insertion, duplicate prevention, and fetch run recording.
+- [x] API and dashboard tests cover successful, empty, and error states.
 
 ## Blocked by
 
