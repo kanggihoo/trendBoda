@@ -11,3 +11,8 @@ dist/
 build/
 *.tfstate
 *.tfstate.*
+
+
+# 임시 
+참고.md
+DESIGN-SPEC.md

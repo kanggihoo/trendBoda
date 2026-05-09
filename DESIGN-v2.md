@@ -45,6 +45,20 @@ colors:
   dark-ink-muted: "#C7D0C5"
   dark-ink-subtle: "#9AA69D"
   dark-ink-tertiary: "#758078"
+  dark-primary: "#2EA66F"
+  dark-primary-hover: "#38B87C"
+  dark-primary-active: "#259B63"
+  dark-focus-ring: "#38B87C"
+  dark-on-primary: "#FFFFFF"
+  dark-success: "#3DA567"
+  dark-warning: "#D49B2A"
+  dark-danger: "#E05551"
+  dark-info: "#5B8AF0"
+  dark-stale: "#8895A4"
+  dark-urgent: "#D94A42"
+  dark-market-up: "#3DA567"
+  dark-market-down: "#D94A42"
+  dark-market-neutral: "#8895A4"
 typography:
   display:
     fontFamily: Pretendard
@@ -76,11 +90,13 @@ typography:
     fontSize: 12px
     fontWeight: 500
     lineHeight: 1.4
+    letterSpacing: 0.02em
   button:
     fontFamily: Pretendard
     fontSize: 14px
     fontWeight: 600
     lineHeight: 1.2
+    letterSpacing: 0.01em
   metric:
     fontFamily: Pretendard
     fontSize: 28px
@@ -104,6 +120,7 @@ spacing:
   page-x-mobile: 16px
   row-y: 10px
   panel-padding: 16px
+  panel-padding-lg: 24px
 rounded:
   xs: 4px
   sm: 6px
@@ -125,6 +142,7 @@ components:
     rounded: "{rounded.md}"
     backgroundColor: "{colors.surface-1}"
     textColor: "{colors.ink}"
+    borderColor: "{colors.hairline}"
   button-ghost:
     rounded: "{rounded.md}"
     textColor: "{colors.ink-muted}"
@@ -133,13 +151,14 @@ components:
   status-badge:
     rounded: "{rounded.pill}"
     typography: "{typography.caption}"
-    padding: 8px
+    padding: "{spacing.sm}"
   dashboard-panel:
     rounded: "{rounded.xl}"
     backgroundColor: "{colors.surface-1}"
     padding: "{spacing.panel-padding}"
   signal-row:
     rounded: "{rounded.lg}"
+    backgroundColor: "{colors.surface-1}"
     height: 44px
   metric-card:
     rounded: "{rounded.xl}"
@@ -148,8 +167,12 @@ components:
   text-input:
     rounded: "{rounded.md}"
     backgroundColor: "{colors.surface-1}"
+    height: 44px
+    padding: "{spacing.md}"
   table-row:
     height: 44px
+  table-row-hover:
+    backgroundColor: "{colors.surface-2}"
   top-nav:
     backgroundColor: "{colors.surface-1}"
     padding: "{spacing.page-x-desktop}"
@@ -168,7 +191,9 @@ components:
   summary-box:
     rounded: "{rounded.lg}"
     backgroundColor: "{colors.primary-soft-light}"
-    padding: "{spacing.panel-padding}"
+    padding: "{spacing.panel-padding-lg}"
+  summary-box-dark:
+    backgroundColor: "{colors.primary-soft-dark}"
   skeleton:
     rounded: "{rounded.md}"
     backgroundColor: "{colors.surface-2}"
@@ -215,6 +240,8 @@ The palette is rooted in high-contrast neutrals with a single, evocative accent 
 - **Dark Muted Ink (#C7D0C5):** Secondary body text and descriptions in dark mode.
 - **Dark Subtle Ink (#9AA69D):** Metadata, timestamps, labels, and helper text.
 - **Dark Tertiary Ink (#758078):** Disabled labels and low-priority hints.
+- **Dark Developer Emerald (#2EA66F):** Lighter primary for actions, active tabs, and focus states. Maintains visual prominence against charcoal surfaces.
+- **Dark Semantic Colors:** Success (#3DA567), Warning (#D49B2A), Danger (#E05551), Info (#5B8AF0), Stale (#8895A4), and Urgent (#D94A42) are lightened for readability on dark surfaces. Market movement colors follow the same adjustment.
 
 ## Typography
 
@@ -296,4 +323,3 @@ The shape language utilizes precise, restrained rounding.
 - **Don't** use gradients, glow, blurred orbs, or decorative spotlights.
 - **Don't** nest cards inside cards.
 - **Don't** mix pill-shaped buttons with standard 8px buttons except for segmented controls or badges.
- mix pill-shaped buttons with standard 8px buttons except for segmented controls or badges.

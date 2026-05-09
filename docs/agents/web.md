@@ -11,9 +11,9 @@ Use this when working on the TrendBoda Next.js dashboard, frontend tooling, styl
 
 ## Before Changing Web Code
 
-- Read root `DESIGN.md` before changing dashboard UI, styling, components, icons, or fonts.
-- If `DESIGN.md` does not exist yet, check `.scratch/first-slice/issues/09-create-dashboard-design-system-contract.md` before making visual-system decisions.
-- Follow `DESIGN.md` for visual-system choices and this file for implementation workflow.
+- Read root `DESIGN-v2.md` before changing dashboard UI, styling, components, icons, or fonts.
+- If `DESIGN-v2.md` does not exist yet, check `.scratch/first-slice/issues/09-create-dashboard-design-system-contract.md` before making visual-system decisions.
+- Follow `DESIGN-v2.md` for visual-system choices and this file for implementation workflow.
 
 ## Package Manager
 
