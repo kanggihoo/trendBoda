@@ -56,8 +56,8 @@ class FakeProvider:
 def test_list_geeknews_items_returns_recent_items() -> None:
     app.dependency_overrides[get_repositories] = FakeRepositories
     try:
-        with TestClient(app) as client:
-            response = client.get("/geeknews/items")
+        client = TestClient(app)
+        response = client.get("/geeknews/items")
     finally:
         app.dependency_overrides.clear()
 
@@ -69,8 +69,8 @@ def test_fetch_geeknews_records_run_and_insert_count() -> None:
     app.dependency_overrides[get_repositories] = FakeRepositories
     app.dependency_overrides[get_geeknews_provider] = FakeProvider
     try:
-        with TestClient(app) as client:
-            response = client.post("/geeknews/fetch")
+        client = TestClient(app)
+        response = client.post("/geeknews/fetch")
     finally:
         app.dependency_overrides.clear()
 
