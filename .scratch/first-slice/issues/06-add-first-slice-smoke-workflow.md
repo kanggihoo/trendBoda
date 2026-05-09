@@ -28,3 +28,4 @@ Add an end-to-end local smoke workflow that proves the first slice works as a co
 ## Blocked by
 
 - .scratch/first-slice/issues/05-add-telegram-interactive-bot-commands.md
+- .scratch/first-slice/issues/08-standardize-web-tooling-with-pnpm-and-tailwind.md

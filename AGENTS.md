@@ -17,3 +17,7 @@ Single-context repo: domain language lives in `CONTEXT.md`, ADRs in `docs/adr/`,
 ### Backend setup
 
 Backend Python setup, uv commands, tests, migrations, and local tooling conventions live in `docs/agents/backend.md`.
+
+### Web setup
+
+Next.js dashboard setup, pnpm commands, Tailwind styling, shadcn/ui, lucide icons, fonts, and component conventions live in `docs/agents/web.md`.

@@ -28,6 +28,10 @@ _Avoid_: News, announcement
 A source that provides high-interest developer projects or engineering news.
 _Avoid_: Geek news, tech feed
 
+**GeekNews Provider**:
+The first provider adapter used to collect items from a Developer Trend Source.
+_Avoid_: Developer Trend Source, Geek news
+
 **Signal**:
 A source item or market change that is worth showing to the owner.
 _Avoid_: Notification, post, update
@@ -81,6 +85,7 @@ _Avoid_: Analysis, summary
 - **TrendBoda** has exactly one **Owner**
 - An **Owner** configures one or more **Sources**
 - A **Source** may be a **Market Source**, **Disclosure Source**, or **Developer Trend Source**
+- A **GeekNews Provider** collects items for a **Developer Trend Source**
 - A **Signal** is delivered through either a **Routine Briefing** or an **Urgent Alert**
 - Most **Signals** are delivered through **Routine Briefings**
 - A **Commute Briefing** is a **Routine Briefing** focused on major news
@@ -120,3 +125,4 @@ _Avoid_: Analysis, summary
 - "notification" was too broad — resolved: use **Routine Briefing** for scheduled summaries and **Urgent Alert** for exceptional immediate messages.
 - "Telegram bot" was ambiguous — resolved: use **Interactive Bot** when the owner can ask for information, not only receive messages.
 - "investment advice" was too broad and risky — resolved: use **Investment Analysis** for evidence-backed explanations without buy or sell instructions.
+- "GeekNews" was ambiguous — resolved: use **GeekNews Provider** for the adapter and **Developer Trend Source** for the domain concept.

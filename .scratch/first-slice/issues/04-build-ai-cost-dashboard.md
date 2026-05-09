@@ -37,3 +37,4 @@ Build the product-facing AI Cost Dashboard for OpenRouter usage. The Owner shoul
 ## Blocked by
 
 - .scratch/first-slice/issues/03-add-openrouter-summarization-with-usage-records.md
+- .scratch/first-slice/issues/08-standardize-web-tooling-with-pnpm-and-tailwind.md

@@ -43,3 +43,5 @@ Add OpenRouter-powered summarization for stored GeekNews items, using explicit A
 ## Blocked by
 
 - .scratch/first-slice/issues/02-collect-and-display-geeknews-items.md
+- .scratch/first-slice/issues/07-harden-geeknews-slice-and-api-boundaries.md
+- .scratch/first-slice/issues/08-standardize-web-tooling-with-pnpm-and-tailwind.md
