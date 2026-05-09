@@ -23,18 +23,22 @@ This issue is a follow-up to issue 02. It should not rename database tables, API
 
 ## Acceptance criteria
 
-- [ ] `backend/src/trendboda/app.py` owns FastAPI app creation, lifespan setup, and router registration only.
-- [ ] FastAPI dependency helpers live outside `app.py` and read repositories from `request.app.state`.
-- [ ] GeekNews routes/controllers live outside `app.py`.
-- [ ] GeekNews Pydantic API response models live outside `app.py`.
-- [ ] Existing `/health`, `/geeknews/items`, and `/geeknews/fetch` API behavior remains compatible.
-- [ ] Failed GeekNews fetch attempts record a `geeknews_fetch_runs` row with `status = 'failure'`, `item_count = 0`, and an inspectable error message when possible.
-- [ ] The dashboard shows both publish time and fetch time for recent GeekNews items.
-- [ ] Parser tests cover valid RSS, missing optional fields, HTML entities, duplicate identifiers, item ordering, and malformed XML behavior.
-- [ ] API tests cover successful item listing, empty item listing, successful fetch, and fetch failure recording behavior.
-- [ ] Dashboard tests or checks cover loading, empty, ready, and error states for GeekNews items.
-- [ ] No broad source-domain refactor is performed; GeekNews remains the provider-specific first-slice path.
+- [x] `backend/src/trendboda/app.py` owns FastAPI app creation, lifespan setup, and router registration only.
+- [x] FastAPI dependency helpers live outside `app.py` and read repositories from `request.app.state`.
+- [x] GeekNews routes/controllers live outside `app.py`.
+- [x] GeekNews Pydantic API response models live outside `app.py`.
+- [x] Existing `/health`, `/geeknews/items`, and `/geeknews/fetch` API behavior remains compatible.
+- [x] Failed GeekNews fetch attempts record a `geeknews_fetch_runs` row with `status = 'failure'`, `item_count = 0`, and an inspectable error message when possible.
+- [x] The dashboard shows both publish time and fetch time for recent GeekNews items.
+- [x] Parser tests cover valid RSS, missing optional fields, HTML entities, duplicate identifiers, item ordering, and malformed XML behavior.
+- [x] API tests cover successful item listing, empty item listing, successful fetch, and fetch failure recording behavior.
+- [x] Dashboard tests or checks cover loading, empty, ready, and error states for GeekNews items.
+- [x] No broad source-domain refactor is performed; GeekNews remains the provider-specific first-slice path.
 
 ## Blocked by
 
 - .scratch/first-slice/issues/02-collect-and-display-geeknews-items.md
+
+## Comments
+
+- 2026-05-09: Implemented API boundary hardening, GeekNews fetch failure recording, parser/API/dashboard checks, and publish/fetch time display. Verified with backend unit tests, backend integration tests, ruff, pyright, web lint, and Next build.

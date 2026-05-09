@@ -67,11 +67,18 @@ export function GeekNewsList() {
           <a href={item.source_url} rel="noreferrer" target="_blank">
             {item.title}
           </a>
-          <span>{formatDate(item.published_at ?? item.fetched_at)}</span>
+          <div className="signal-times" aria-label={`${item.title} timeline`}>
+            <span>Published {formatOptionalDate(item.published_at)}</span>
+            <span>Fetched {formatDate(item.fetched_at)}</span>
+          </div>
         </li>
       ))}
     </ul>
   );
+}
+
+function formatOptionalDate(value: string | null) {
+  return value ? formatDate(value) : "Unknown";
 }
 
 function formatDate(value: string) {

@@ -33,6 +33,20 @@ def test_parse_geeknews_rss_uses_link_when_guid_missing() -> None:
     items = parse_geeknews_rss(rss)
 
     assert items[0].external_id == "https://news.example.com/a"
+    assert items[0].published_at is None
+
+
+def test_parse_geeknews_rss_preserves_duplicate_identifiers_in_feed_order() -> None:
+    rss = """<rss><channel>
+      <item><guid>duplicate</guid><title>First</title><link>https://news.example.com/1</link></item>
+      <item><guid>duplicate</guid><title>Second</title><link>https://news.example.com/2</link></item>
+      <item><guid>later</guid><title>Third</title><link>https://news.example.com/3</link></item>
+    </channel></rss>"""
+
+    items = parse_geeknews_rss(rss)
+
+    assert [item.external_id for item in items] == ["duplicate", "duplicate", "later"]
+    assert [item.title for item in items] == ["First", "Second", "Third"]
 
 
 def test_parse_geeknews_rss_rejects_malformed_xml() -> None:

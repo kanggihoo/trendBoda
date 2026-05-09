@@ -1,0 +1,22 @@
+from pydantic import BaseModel, ConfigDict
+
+
+class GeekNewsItemResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    external_id: str
+    title: str
+    source_url: str
+    published_at: str | None
+    fetched_at: str
+
+
+class GeekNewsItemsResponse(BaseModel):
+    items: list[GeekNewsItemResponse]
+
+
+class GeekNewsFetchResponse(BaseModel):
+    fetch_run_id: int
+    fetched_count: int
+    inserted_count: int

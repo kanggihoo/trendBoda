@@ -20,3 +20,17 @@ if (!page.includes("Developer Trend Source")) {
 if (!geeknewsList.includes("/geeknews/items")) {
   throw new Error("Dashboard shell must request GeekNews items from FastAPI.");
 }
+
+for (const stateText of [
+  "Loading recent Developer Trend Source signals.",
+  "GeekNews items are unavailable.",
+  "No GeekNews items fetched yet.",
+]) {
+  if (!geeknewsList.includes(stateText)) {
+    throw new Error(`Dashboard shell must cover state text: ${stateText}`);
+  }
+}
+
+if (!geeknewsList.includes("Published") || !geeknewsList.includes("Fetched")) {
+  throw new Error("Dashboard shell must show both publish time and fetch time.");
+}

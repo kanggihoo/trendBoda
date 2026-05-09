@@ -117,7 +117,13 @@ h1 {
   text-decoration: underline;
 }
 
-.signal-list span {
+.signal-times {
+  display: grid;
+  gap: 4px;
+  justify-items: end;
+}
+
+.signal-times span {
   color: #637067;
   font-size: 0.9rem;
   white-space: nowrap;
@@ -141,7 +147,11 @@ h1 {
     gap: 6px;
   }
 
-  .signal-list span {
+  .signal-times {
+    justify-items: start;
+  }
+
+  .signal-times span {
     white-space: normal;
   }
 }
