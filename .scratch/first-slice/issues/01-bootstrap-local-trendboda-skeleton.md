@@ -21,15 +21,15 @@ Create the local development skeleton for the TrendBoda first slice. The Owner s
 
 ## Acceptance criteria
 
-- [ ] Local Postgres can be started through Docker Compose.
-- [ ] dbmate is configured and can apply at least one initial migration.
-- [ ] FastAPI starts locally and exposes a health endpoint.
-- [ ] Backend Python dependencies and commands are managed through uv.
-- [ ] Next.js starts locally and renders a basic TrendBoda dashboard shell.
-- [ ] Backend test command exists and passes for health/config baseline tests.
-- [ ] Frontend test or lint command exists and passes for the dashboard shell.
-- [ ] Repository pattern and asyncpg connection-pool setup are established without SQLAlchemy.
-- [ ] Local setup instructions document how to start DB, apply migrations, run API, run web, and run tests.
+- [x] Local Postgres can be started through Docker Compose.
+- [x] dbmate is configured and can apply at least one initial migration.
+- [x] FastAPI starts locally and exposes a health endpoint.
+- [x] Backend Python dependencies and commands are managed through uv.
+- [x] Next.js starts locally and renders a basic TrendBoda dashboard shell.
+- [x] Backend test command exists and passes for health/config baseline tests.
+- [x] Frontend test or lint command exists and passes for the dashboard shell.
+- [x] Repository pattern and asyncpg connection-pool setup are established without SQLAlchemy.
+- [x] Local setup instructions document how to start DB, apply migrations, run API, run web, and run tests.
 
 ## Blocked by
 

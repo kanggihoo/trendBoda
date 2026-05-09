@@ -13,7 +13,9 @@ TrendBoda backend는 `uv`로 Python 의존성과 명령 실행을 관리한다. 
 │   ├── pyproject.toml
 │   ├── src/trendboda/
 │   └── tests/
-└── db/migrations/
+├── db/migrations/
+├── docker-compose.yml
+└── web/
 ```
 
 중요한 점:
@@ -42,6 +44,36 @@ backend/.venv/bin/python
 ```
 
 ## 3. 자주 쓰는 명령
+
+### Local Postgres
+
+```bash
+docker compose up -d postgres
+```
+
+### dbmate migrations
+
+```bash
+dbmate --env-file .env --migrations-dir db/migrations up
+```
+
+### FastAPI
+
+```bash
+uv --directory backend run fastapi dev src/trendboda/app.py
+```
+
+Health check:
+
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+Expected response:
+
+```json
+{"status":"ok","service":"trendboda-api"}
+```
 
 ### Unit test
 
@@ -82,6 +114,30 @@ uv --directory backend run ruff format .
 
 ```bash
 uv --directory backend run pyright
+```
+
+### Web install
+
+```bash
+npm --prefix web install
+```
+
+### Web dev server
+
+```bash
+npm --prefix web run dev
+```
+
+### Web lint smoke
+
+```bash
+npm --prefix web run lint
+```
+
+### Web build
+
+```bash
+npm --prefix web run build
 ```
 
 ## 4. 왜 `uv --directory backend`를 쓰나
@@ -225,10 +281,15 @@ Command Palette에서 `Tasks: Run Task` 실행 후 사용할 수 있는 task:
 
 ```bash
 uv --directory backend sync
+docker compose up -d postgres
+dbmate --env-file .env --migrations-dir db/migrations up
 uv --directory backend run pytest
 uv --directory backend run ruff check .
 uv --directory backend run ruff format --check .
 uv --directory backend run pyright
+npm --prefix web install
+npm --prefix web run lint
+npm --prefix web run build
 uv --directory backend run pytest -m integration
 ```
 
