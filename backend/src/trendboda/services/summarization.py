@@ -37,7 +37,11 @@ class GeekNewsSummaryService:
                 },
                 {
                     "role": "user",
-                    "content": f"Title: {item.title}\nURL: {item.source_url}",
+                    "content": (
+                        f"Title: {item.title}\n"
+                        f"URL: {item.source_url}\n"
+                        f"Content: {item.content_text}"
+                    ),
                 },
             ],
         )

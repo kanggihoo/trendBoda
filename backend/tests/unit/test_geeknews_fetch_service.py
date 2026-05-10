@@ -1,5 +1,4 @@
 import pytest
-
 from trendboda.exceptions import GeekNewsFetchFailed
 from trendboda.geeknews import GeekNewsItem
 from trendboda.services.geeknews import GeekNewsFetchService
@@ -34,6 +33,8 @@ class FakeProvider:
                 external_id="item-1",
                 title="Fetched signal",
                 source_url="https://news.example.com/1",
+                content_raw_html="<ul><li>Item body</li></ul>",
+                content_text="• Item body",
                 published_at=None,
             )
         ]

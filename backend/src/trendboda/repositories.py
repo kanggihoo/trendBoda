@@ -28,6 +28,7 @@ class GeekNewsRepository:
         item_count: int,
         error_message: str | None = None,
     ) -> int:
+        """RSS 수집 실행 기록 저장. 생성된 ID 반환."""
         row = await self._pool.fetchrow(
             """
             INSERT INTO geeknews_fetch_runs (source_name, status, item_count, error_message)
@@ -41,7 +42,9 @@ class GeekNewsRepository:
         )
         return int(row["id"])
 
+    # TODO : 개선 방법 (배치 처리):
     async def upsert_items(self, *, fetch_run_id: int, items: list[GeekNewsItem]) -> int:
+        """뉴스 아이템 저장 또는 업데이트. 신규 삽입 개수 반환."""
         inserted_count = 0
         async with self._pool.acquire() as connection:
             async with connection.transaction():
@@ -54,13 +57,17 @@ class GeekNewsRepository:
                           external_id,
                           title,
                           source_url,
+                          content_raw_html,
+                          content_text,
                           published_at
                         )
-                        VALUES ($1, $2, $3, $4, $5, $6)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                         ON CONFLICT (source_name, external_id) DO UPDATE
                         SET fetch_run_id = EXCLUDED.fetch_run_id,
                             title = EXCLUDED.title,
                             source_url = EXCLUDED.source_url,
+                            content_raw_html = EXCLUDED.content_raw_html,
+                            content_text = EXCLUDED.content_text,
                             published_at = EXCLUDED.published_at,
                             updated_at = now()
                         WHERE FALSE
@@ -70,6 +77,8 @@ class GeekNewsRepository:
                         item.external_id,
                         item.title,
                         item.source_url,
+                        item.content_raw_html,
+                        item.content_text,
                         item.published_at,
                     )
                     if result == "INSERT 0 1":
@@ -77,6 +86,7 @@ class GeekNewsRepository:
         return inserted_count
 
     async def list_recent_items(self, *, limit: int) -> list[StoredGeekNewsItem]:
+        """최신 뉴스 아이템 목록 조회."""
         rows = await self._pool.fetch(
             """
             SELECT id,
@@ -84,6 +94,7 @@ class GeekNewsRepository:
                    external_id,
                    title,
                    source_url,
+                   content_text,
                    published_at,
                    fetched_at
             FROM geeknews_items
@@ -101,6 +112,7 @@ class GeekNewsRepository:
                 external_id=str(row["external_id"]),
                 title=str(row["title"]),
                 source_url=str(row["source_url"]),
+                content_text=str(row["content_text"]),
                 published_at=row["published_at"],
                 fetched_at=row["fetched_at"],
             )
@@ -108,6 +120,7 @@ class GeekNewsRepository:
         ]
 
     async def get_item(self, *, item_id: int) -> StoredGeekNewsItem | None:
+        """단일 뉴스 아이템 상세 조회."""
         row = await self._pool.fetchrow(
             """
             SELECT id,
@@ -115,6 +128,7 @@ class GeekNewsRepository:
                    external_id,
                    title,
                    source_url,
+                   content_text,
                    published_at,
                    fetched_at
             FROM geeknews_items
@@ -132,11 +146,13 @@ class GeekNewsRepository:
             external_id=str(row["external_id"]),
             title=str(row["title"]),
             source_url=str(row["source_url"]),
+            content_text=str(row["content_text"]),
             published_at=row["published_at"],
             fetched_at=row["fetched_at"],
         )
 
     async def get_summary(self, *, item_id: int) -> "GeekNewsSummary | None":
+        """뉴스 아이템 AI 요약 결과 조회."""
         row = await self._pool.fetchrow(
             """
             SELECT item_id,
@@ -164,6 +180,7 @@ class GeekNewsRepository:
         summary: str,
         model: str,
     ) -> "GeekNewsSummary":
+        """AI 요약 저장 또는 업데이트."""
         row = await self._pool.fetchrow(
             """
             INSERT INTO geeknews_summaries (item_id, summary, model)
@@ -202,6 +219,7 @@ class GeekNewsRepository:
         pricing_snapshot: dict[str, Any] | None,
         error_message: str | None,
     ) -> int:
+        """AI 모델 사용량 및 비용 기록 저장."""
         row = await self._pool.fetchrow(
             """
             INSERT INTO ai_usage_records (

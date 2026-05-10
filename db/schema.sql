@@ -20,6 +20,43 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: ai_usage_records; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ai_usage_records (
+    id bigint NOT NULL,
+    feature text NOT NULL,
+    status text NOT NULL,
+    requested_models text[] NOT NULL,
+    actual_model text,
+    prompt_tokens integer,
+    completion_tokens integer,
+    total_tokens integer,
+    estimated_cost_usd numeric(18,12),
+    latency_ms integer NOT NULL,
+    pricing_source text,
+    pricing_snapshot jsonb,
+    error_message text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT ai_usage_records_status_check CHECK ((status = ANY (ARRAY['success'::text, 'failure'::text])))
+);
+
+
+--
+-- Name: ai_usage_records_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.ai_usage_records ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.ai_usage_records_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: geeknews_fetch_runs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -63,7 +100,9 @@ CREATE TABLE public.geeknews_items (
     published_at timestamp with time zone,
     fetched_at timestamp with time zone DEFAULT now() NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    content_raw_html text DEFAULT ''::text NOT NULL,
+    content_text text DEFAULT ''::text NOT NULL
 );
 
 
@@ -82,12 +121,34 @@ ALTER TABLE public.geeknews_items ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTI
 
 
 --
+-- Name: geeknews_summaries; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.geeknews_summaries (
+    item_id bigint NOT NULL,
+    summary text NOT NULL,
+    model text NOT NULL,
+    generated_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.schema_migrations (
     version character varying NOT NULL
 );
+
+
+--
+-- Name: ai_usage_records ai_usage_records_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ai_usage_records
+    ADD CONSTRAINT ai_usage_records_pkey PRIMARY KEY (id);
 
 
 --
@@ -115,11 +176,33 @@ ALTER TABLE ONLY public.geeknews_items
 
 
 --
+-- Name: geeknews_summaries geeknews_summaries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.geeknews_summaries
+    ADD CONSTRAINT geeknews_summaries_pkey PRIMARY KEY (item_id);
+
+
+--
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: ai_usage_records_actual_model_created_at_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ai_usage_records_actual_model_created_at_idx ON public.ai_usage_records USING btree (actual_model, created_at DESC);
+
+
+--
+-- Name: ai_usage_records_feature_created_at_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ai_usage_records_feature_created_at_idx ON public.ai_usage_records USING btree (feature, created_at DESC);
 
 
 --
@@ -152,6 +235,14 @@ ALTER TABLE ONLY public.geeknews_items
 
 
 --
+-- Name: geeknews_summaries geeknews_summaries_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.geeknews_summaries
+    ADD CONSTRAINT geeknews_summaries_item_id_fkey FOREIGN KEY (item_id) REFERENCES public.geeknews_items(id) ON DELETE CASCADE;
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -163,4 +254,6 @@ ALTER TABLE ONLY public.geeknews_items
 --
 
 INSERT INTO public.schema_migrations (version) VALUES
-    ('20260509000000');
+    ('20260509000000'),
+    ('20260510000000'),
+    ('20260510000001');

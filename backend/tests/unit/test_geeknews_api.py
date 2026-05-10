@@ -1,8 +1,8 @@
 from datetime import UTC, datetime
 from decimal import Decimal
+from typing import cast
 
 from fastapi.testclient import TestClient
-
 from trendboda.ai import AIUsageStatus
 from trendboda.api.dependencies import get_geeknews_provider, get_repositories
 from trendboda.app import app
@@ -19,6 +19,7 @@ class FakeGeekNewsRepository:
                 external_id="item-1",
                 title="Stored signal",
                 source_url="https://news.example.com/1",
+                content_text="• Stored item body",
                 published_at=datetime(2026, 5, 9, 10, 0, tzinfo=UTC),
                 fetched_at=datetime(2026, 5, 9, 10, 5, tzinfo=UTC),
             )
@@ -91,6 +92,8 @@ class FakeProvider:
                 external_id="new-1",
                 title="New signal",
                 source_url="https://news.example.com/new",
+                content_raw_html="<ul><li>New item body</li></ul>",
+                content_text="• New item body",
                 published_at=None,
             )
         ]
@@ -102,9 +105,13 @@ class FailingProvider:
 
 
 class FakeSummaryGateway:
+    def __init__(self) -> None:
+        self.calls: list[dict[str, object]] = []
+
     async def complete(self, *, models: list[str], messages: list[dict[str, str]]):
         from trendboda.ai import OpenRouterResult
 
+        self.calls.append({"models": models, "messages": messages})
         return OpenRouterResult(
             status=AIUsageStatus.SUCCESS,
             content="Generated owner-ready summary",
@@ -156,6 +163,7 @@ def test_list_geeknews_items_returns_recent_items() -> None:
 
     assert response.status_code == 200
     assert response.json()["items"][0]["title"] == "Stored signal"
+    assert response.json()["items"][0]["content_text"] == "• Stored item body"
     assert response.json()["items"][0]["published_at"] == "2026-05-09T10:00:00+00:00"
     assert response.json()["items"][0]["fetched_at"] == "2026-05-09T10:05:00+00:00"
     assert response.json()["items"][0]["summary"]["summary"] == "Existing stored summary"
@@ -240,8 +248,9 @@ def test_generate_geeknews_summary_stores_summary_and_usage() -> None:
     from trendboda.api.dependencies import get_openrouter_gateway, get_pricing_catalog
 
     repositories = FakeRepositories()
+    gateway = FakeSummaryGateway()
     app.dependency_overrides[get_repositories] = lambda: repositories
-    app.dependency_overrides[get_openrouter_gateway] = FakeSummaryGateway
+    app.dependency_overrides[get_openrouter_gateway] = lambda: gateway
     app.dependency_overrides[get_pricing_catalog] = FakePricingCatalog
     try:
         client = TestClient(app)
@@ -252,6 +261,10 @@ def test_generate_geeknews_summary_stores_summary_and_usage() -> None:
     assert response.status_code == 200
     assert response.json()["summary"] == "Generated owner-ready summary"
     assert response.json()["model"] == "google/gemini-2.5-flash-lite"
+    messages = cast(list[dict[str, str]], gateway.calls[0]["messages"])
+    assert messages[1]["content"] == (
+        "Title: Stored signal\nURL: https://news.example.com/1\nContent: • Stored item body"
+    )
     assert repositories.geeknews.ai_usage_records == [
         {
             "feature": "geeknews_summary",

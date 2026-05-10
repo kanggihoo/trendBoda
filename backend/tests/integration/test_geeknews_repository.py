@@ -21,6 +21,8 @@ async def test_geeknews_repository_records_fetch_and_prevents_duplicates(
             external_id="external-1",
             title="First signal",
             source_url="https://news.example.com/1",
+            content_raw_html="<ul><li>First body</li></ul>",
+            content_text="• First body",
             published_at=datetime(2026, 5, 9, 10, 0, tzinfo=UTC),
         )
 
@@ -52,6 +54,8 @@ async def test_geeknews_repository_upserts_summary_and_records_ai_usage(
                     external_id="external-summary",
                     title="Summary target",
                     source_url="https://news.example.com/summary",
+                    content_raw_html="<ul><li>Summary body</li></ul>",
+                    content_text="• Summary body",
                     published_at=datetime(2026, 5, 9, 10, 0, tzinfo=UTC),
                 )
             ],

@@ -20,6 +20,19 @@ async def test_geeknews_tables_are_created(migrated_database_url: str) -> None:
             ORDER BY table_name
             """
         )
+        columns = await connection.fetch(
+            """
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_schema = 'public'
+              AND table_name = 'geeknews_items'
+              AND column_name IN (
+                'content_raw_html',
+                'content_text'
+              )
+            ORDER BY column_name
+            """
+        )
     finally:
         await connection.close()
 
@@ -29,3 +42,4 @@ async def test_geeknews_tables_are_created(migrated_database_url: str) -> None:
         "geeknews_items",
         "geeknews_summaries",
     ]
+    assert [row["column_name"] for row in columns] == ["content_raw_html", "content_text"]

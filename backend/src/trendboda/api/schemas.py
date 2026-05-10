@@ -8,6 +8,7 @@ class GeekNewsItemResponse(BaseModel):
     external_id: str
     title: str
     source_url: str
+    content_text: str
     published_at: str | None
     fetched_at: str
     summary: "GeekNewsSummaryResponse | None" = None

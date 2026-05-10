@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 # Add OpenRouter summarization with usage records
@@ -39,6 +39,20 @@ Add OpenRouter-powered summarization for stored GeekNews items, using explicit A
 - [ ] OpenRouter gateway tests mock HTTP responses and cover success, failure, usage extraction, latency recording, and fallback behavior.
 - [ ] Cost calculation tests cover prompt/completion pricing, missing usage fields, zero-token responses, failed requests, and pricing snapshot persistence.
 - [ ] AI routing tests cover feature-to-model mapping, config override behavior, and actual model string persistence.
+
+## Implementation decisions
+
+- Use `AIModel.OPENAI_GPT_4_1_NANO` for `openai/gpt-4.1-nano`.
+- Use `AIModel.GOOGLE_GEMINI_2_5_FLASH_LITE` for `google/gemini-2.5-flash-lite`.
+- Route `AIFeature.GEEKNEWS_SUMMARY` through OpenRouter with `models: ["openai/gpt-4.1-nano", "google/gemini-2.5-flash-lite"]`.
+- Use OpenRouter-managed fallback rather than app-level retry logic.
+- Record one AI usage row per TrendBoda AI request; OpenRouter internal fallback attempts are not separate TrendBoda requests.
+- Store the response `model` as the actual OpenRouter model string and calculate estimated cost from that model's request-time pricing snapshot.
+- Read the OpenRouter API key from `OPENROUTER_API_KEY`.
+- Fetch model pricing from OpenRouter `/api/v1/models` and cache it for roughly one day.
+- Do not block summarization when `/api/v1/models` lookup fails; use local fallback pricing or mark estimated cost unavailable.
+- Store one current summary per GeekNews item; repeated generation upserts and replaces the stored summary for that item.
+- Keep every summarization attempt as a separate AI usage record, even when the stored summary is replaced.
 
 ## Blocked by
 

@@ -32,6 +32,10 @@ _Avoid_: Geek news, tech feed
 The first provider adapter used to collect items from a Developer Trend Source.
 _Avoid_: Developer Trend Source, Geek news
 
+**GeekNews Item Content**:
+Raw HTML body from a GeekNews entry that may later be rendered, sanitized, or summarized.
+_Avoid_: Rendered text, summary, excerpt
+
 **Signal**:
 A source item or market change that is worth showing to the owner.
 _Avoid_: Notification, post, update

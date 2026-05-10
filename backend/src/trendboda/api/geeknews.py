@@ -20,14 +20,14 @@ from trendboda.services.summarization import GeekNewsSummaryService
 router = APIRouter(prefix="/geeknews")
 
 
+# TODO : limit도 파라미터로?
 @router.get("/items")
 async def list_geeknews_items(
     repositories: RepositoriesDep,
 ) -> GeekNewsItemsResponse:
     items = await repositories.geeknews.list_recent_items(limit=50)
     summaries = {
-        item.id: await repositories.geeknews.get_summary(item_id=item.id)
-        for item in items
+        item.id: await repositories.geeknews.get_summary(item_id=item.id) for item in items
     }
     return GeekNewsItemsResponse(
         items=[
@@ -36,6 +36,7 @@ async def list_geeknews_items(
                 external_id=item.external_id,
                 title=item.title,
                 source_url=item.source_url,
+                content_text=item.content_text,
                 published_at=item.published_at.isoformat() if item.published_at else None,
                 fetched_at=item.fetched_at.isoformat(),
                 summary=_summary_response(summaries[item.id]),
