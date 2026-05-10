@@ -6,4 +6,5 @@ TrendBoda will route AI requests through explicit `AIModel` and `AIFeature` enum
 
 - AI features must declare which route they use instead of calling arbitrary models directly.
 - Each AI usage record stores the actual OpenRouter model string used for the request.
-- Fallback behavior is configured per feature, not hidden inside prompt code.
+- Fallback behavior is configured per feature and sent to OpenRouter as an ordered `models` list when the provider supports managed fallback.
+- A managed fallback request is recorded as one AI usage record; the successful response model or final error represents the request outcome.
