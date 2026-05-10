@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 # Add first-slice smoke workflow
@@ -18,14 +18,21 @@ Add an end-to-end local smoke workflow that proves the first slice works as a co
 
 ## Acceptance criteria
 
-- [ ] A documented local smoke workflow covers DB startup, migrations, API startup, web startup, GeekNews fetch, summary generation, cost dashboard inspection, and Telegram command checks.
-- [ ] A runnable smoke test or checklist verifies API health, migration status, GeekNews item availability, AI usage recording, and dashboard API connectivity.
-- [ ] The workflow documents which environment variables are required and which can be omitted for no-network or mocked test mode.
-- [ ] The workflow explicitly lists first-slice out-of-scope areas: market data, disclosures, GitHub trends, EC2 deployment, Caddy, OpenTofu, Grafana, Vercel deployment, and Rust Ops CLI.
-- [ ] The smoke workflow can be run after a fresh checkout without relying on cloud deployment.
-- [ ] Tests or scripts fail clearly when local Postgres, migrations, API, or required secrets are missing.
+- [x] A documented local smoke workflow covers DB startup, migrations, API startup, web startup, GeekNews fetch, summary generation, cost dashboard inspection, and Telegram command checks.
+- [x] A runnable smoke test or checklist verifies API health, migration status, GeekNews item availability, AI usage recording, and dashboard API connectivity.
+- [x] The workflow documents which environment variables are required and which can be omitted for no-network or mocked test mode.
+- [x] The workflow explicitly lists first-slice out-of-scope areas: market data, disclosures, GitHub trends, EC2 deployment, Caddy, OpenTofu, Grafana, Vercel deployment, and Rust Ops CLI.
+- [x] The smoke workflow can be run after a fresh checkout without relying on cloud deployment.
+- [x] Tests or scripts fail clearly when local Postgres, migrations, API, or required secrets are missing.
 
 ## Blocked by
 
 - .scratch/first-slice/issues/05-add-telegram-interactive-bot-commands.md
 - .scratch/first-slice/issues/08-standardize-web-tooling-with-pnpm-and-tailwind.md
+
+## Comments
+
+- Added `docs/first-slice-smoke.md` for fresh checkout setup, live and mocked smoke paths, env vars, clear failure cases, and explicit first-slice exclusions.
+- Added `scripts/first-slice-smoke.sh` to verify local Postgres, dbmate migration status, API health, GeekNews item availability, live fetch/summary where enabled, AI cost APIs, web dashboard connectivity, and Telegram formatter behavior.
+- Added backend unit tests for the smoke workflow public contract.
+- Verified with `uv --directory backend run pytest`.
