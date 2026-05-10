@@ -4,6 +4,7 @@ const requiredFiles = [
   "app/fonts/PretendardVariable.woff2",
   "app/layout.tsx",
   "app/page.tsx",
+  "app/ai-cost-dashboard.tsx",
   "app/globals.css",
   "components.json",
   "next.config.ts",
@@ -34,6 +35,10 @@ const packageJson = JSON.parse(
 );
 const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 const geeknewsList = await readFile(new URL("../app/geeknews-list.tsx", import.meta.url), "utf8");
+const aiCostDashboard = await readFile(
+  new URL("../app/ai-cost-dashboard.tsx", import.meta.url),
+  "utf8",
+);
 const layout = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
 const globals = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 const tailwindConfig = await readFile(new URL("../tailwind.config.js", import.meta.url), "utf8");
@@ -77,12 +82,26 @@ if (!geeknewsList.includes("/geeknews/items")) {
   throw new Error("Dashboard shell must request GeekNews items from FastAPI.");
 }
 
+if (!page.includes("AiCostDashboard")) {
+  throw new Error("Dashboard shell must render the AI Cost Dashboard.");
+}
+
+for (const endpoint of ["/ai/cost/summary", "/ai/cost/requests"]) {
+  if (!aiCostDashboard.includes(endpoint)) {
+    throw new Error(`AI Cost Dashboard must request FastAPI endpoint: ${endpoint}`);
+  }
+}
+
 if (!layout.includes("next/font/local") || !layout.includes("PretendardVariable.woff2")) {
   throw new Error("Dashboard shell must load local Pretendard through next/font/local.");
 }
 
 for (const className of ["text-display", "border-hairline", "bg-surface-1", "text-ink-subtle"]) {
-  if (!page.includes(className) && !geeknewsList.includes(className)) {
+  if (
+    !page.includes(className) &&
+    !geeknewsList.includes(className) &&
+    !aiCostDashboard.includes(className)
+  ) {
     throw new Error(`Dashboard shell must use Tailwind design token class: ${className}`);
   }
 }
@@ -91,8 +110,11 @@ for (const stateText of [
   "Loading recent Developer Trend Source signals.",
   "GeekNews items are unavailable.",
   "No GeekNews items fetched yet.",
+  "Loading OpenRouter cost telemetry.",
+  "AI cost data is unavailable.",
+  "No OpenRouter requests recorded yet.",
 ]) {
-  if (!geeknewsList.includes(stateText)) {
+  if (!geeknewsList.includes(stateText) && !aiCostDashboard.includes(stateText)) {
     throw new Error(`Dashboard shell must cover state text: ${stateText}`);
   }
 }
@@ -103,4 +125,18 @@ if (!geeknewsList.includes("Published") || !geeknewsList.includes("Fetched")) {
 
 if (!geeknewsList.includes("summary?.summary")) {
   throw new Error("Dashboard shell must show stored GeekNews summaries when present.");
+}
+
+for (const dashboardText of [
+  "Monthly budget",
+  "Latency",
+  "Error status",
+  "By date",
+  "By model",
+  "By feature",
+  "Recent requests",
+]) {
+  if (!aiCostDashboard.includes(dashboardText)) {
+    throw new Error(`AI Cost Dashboard must cover product text: ${dashboardText}`);
+  }
 }

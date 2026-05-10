@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from trendboda import database
+from trendboda.api.ai_cost import router as ai_cost_router
 from trendboda.api.exception_handlers import register_exception_handlers
 from trendboda.api.geeknews import router as geeknews_router
 from trendboda.api.health import router as health_router
@@ -29,3 +30,4 @@ app.add_middleware(RequestIdMiddleware)
 register_exception_handlers(app)
 app.include_router(health_router)
 app.include_router(geeknews_router)
+app.include_router(ai_cost_router)

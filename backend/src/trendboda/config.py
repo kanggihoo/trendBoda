@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     database_url: str = Field(default="postgres://trendboda:trendboda@localhost:5432/trendboda")
     openrouter_api_key: str | None = None
     telegram_bot_token: str | None = None
+    ai_monthly_budget_usd: str = Field(default="10.00")
 
     model_config = SettingsConfigDict(
         env_file=ROOT_DIR / ".env",

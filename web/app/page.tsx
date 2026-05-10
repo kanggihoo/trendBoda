@@ -1,3 +1,4 @@
+import { AiCostDashboard } from "./ai-cost-dashboard";
 import { GeekNewsList } from "./geeknews-list";
 
 const checks = [
@@ -40,6 +41,14 @@ export default function Home() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section
+        className="w-full max-w-[920px] self-start border-t border-hairline pt-xl"
+        aria-label="AI Cost Dashboard"
+      >
+        <h2 className="mb-lg text-title">AI Cost Dashboard</h2>
+        <AiCostDashboard />
       </section>
 
       <section
