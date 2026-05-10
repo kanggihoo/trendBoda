@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "lint": "node scripts/check-dashboard.mjs"
+    "lint": "tsc --noEmit --incremental false && node scripts/check-dashboard.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

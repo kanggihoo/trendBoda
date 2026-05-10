@@ -5,7 +5,12 @@ const requiredFiles = [
   "app/layout.tsx",
   "app/page.tsx",
   "app/ai-cost-dashboard.tsx",
+  "app/geeknews-list.tsx",
   "app/globals.css",
+  "app/lib/contracts.ts",
+  "app/lib/dashboard-format.ts",
+  "app/lib/trendboda-api.ts",
+  "app/lib/use-remote-resource.ts",
   "components.json",
   "next.config.ts",
   "package.json",
@@ -37,6 +42,19 @@ const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8")
 const geeknewsList = await readFile(new URL("../app/geeknews-list.tsx", import.meta.url), "utf8");
 const aiCostDashboard = await readFile(
   new URL("../app/ai-cost-dashboard.tsx", import.meta.url),
+  "utf8",
+);
+const contracts = await readFile(new URL("../app/lib/contracts.ts", import.meta.url), "utf8");
+const dashboardFormat = await readFile(
+  new URL("../app/lib/dashboard-format.ts", import.meta.url),
+  "utf8",
+);
+const trendbodaApi = await readFile(
+  new URL("../app/lib/trendboda-api.ts", import.meta.url),
+  "utf8",
+);
+const remoteResource = await readFile(
+  new URL("../app/lib/use-remote-resource.ts", import.meta.url),
   "utf8",
 );
 const layout = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
@@ -78,17 +96,53 @@ if (!page.includes("Developer Trend Source")) {
   throw new Error("Dashboard shell must use domain language from CONTEXT.md.");
 }
 
-if (!geeknewsList.includes("/geeknews/items")) {
-  throw new Error("Dashboard shell must request GeekNews items from FastAPI.");
-}
-
 if (!page.includes("AiCostDashboard")) {
   throw new Error("Dashboard shell must render the AI Cost Dashboard.");
 }
 
 for (const endpoint of ["/ai/cost/summary", "/ai/cost/requests"]) {
-  if (!aiCostDashboard.includes(endpoint)) {
-    throw new Error(`AI Cost Dashboard must request FastAPI endpoint: ${endpoint}`);
+  if (!trendbodaApi.includes(endpoint)) {
+    throw new Error(`TrendBoda API module must request FastAPI endpoint: ${endpoint}`);
+  }
+}
+
+if (!trendbodaApi.includes("/geeknews/items")) {
+  throw new Error("TrendBoda API module must request GeekNews items from FastAPI.");
+}
+
+for (const uiSource of [geeknewsList, aiCostDashboard]) {
+  if (uiSource.includes("fetch(") || uiSource.includes("NEXT_PUBLIC_API_BASE_URL")) {
+    throw new Error("Dashboard UI modules must not own backend fetch details.");
+  }
+}
+
+for (const contractType of [
+  "GeekNewsItem",
+  "GeekNewsResponse",
+  "CostSummary",
+  "UsageRequest",
+  "UsageRequestsResponse",
+]) {
+  if (!contracts.includes(`type ${contractType}`)) {
+    throw new Error(`Backend contract mirror must define ${contractType}.`);
+  }
+}
+
+for (const formatter of [
+  "formatUsd",
+  "formatLatency",
+  "formatOptionalDate",
+  "formatDate",
+  "clampPercent",
+]) {
+  if (!dashboardFormat.includes(`function ${formatter}`)) {
+    throw new Error(`Dashboard presentation module must expose ${formatter}.`);
+  }
+}
+
+for (const remoteState of ["loading", "ready", "empty", "error"]) {
+  if (!remoteResource.includes(`"${remoteState}"`)) {
+    throw new Error(`Remote resource module must cover ${remoteState} state.`);
   }
 }
 
@@ -123,7 +177,7 @@ if (!geeknewsList.includes("Published") || !geeknewsList.includes("Fetched")) {
   throw new Error("Dashboard shell must show both publish time and fetch time.");
 }
 
-if (!geeknewsList.includes("summary?.summary")) {
+if (!geeknewsList.includes("item.summary?.summary")) {
   throw new Error("Dashboard shell must show stored GeekNews summaries when present.");
 }
 
