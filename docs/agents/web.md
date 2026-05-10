@@ -25,6 +25,14 @@ Use this when working on the TrendBoda Next.js dashboard, frontend tooling, styl
 ## Styling
 
 - Use Tailwind CSS for dashboard styling.
+- Generate the Tailwind token snapshot from the root design contract when design tokens change:
+
+```bash
+pnpm dlx @google/design.md export --format tailwind DESIGN-v2.md > web/tailwind.theme.json
+```
+
+- Keep `web/tailwind.theme.json` under `web/` and consume it from `web/tailwind.config.*`.
+- Do not keep a root-level `tailwind.theme.json`; root exports are only temporary manual experiments.
 - Keep `web/app/globals.css` limited to Tailwind imports and minimal global styles.
 - Avoid broad hand-written component CSS unless Tailwind cannot express the needed behavior cleanly.
 - Preserve the current dashboard behavior when migrating styles.

@@ -119,25 +119,25 @@ uv --directory backend run pyright
 ### Web install
 
 ```bash
-npm --prefix web install
+pnpm --dir web install
 ```
 
 ### Web dev server
 
 ```bash
-npm --prefix web run dev
+pnpm --dir web run dev
 ```
 
 ### Web lint smoke
 
 ```bash
-npm --prefix web run lint
+pnpm --dir web run lint
 ```
 
 ### Web build
 
 ```bash
-npm --prefix web run build
+pnpm --dir web run build
 ```
 
 ## 4. 왜 `uv --directory backend`를 쓰나
@@ -287,9 +287,9 @@ uv --directory backend run pytest
 uv --directory backend run ruff check .
 uv --directory backend run ruff format --check .
 uv --directory backend run pyright
-npm --prefix web install
-npm --prefix web run lint
-npm --prefix web run build
+pnpm --dir web install
+pnpm --dir web run lint
+pnpm --dir web run build
 uv --directory backend run pytest -m integration
 ```
 
