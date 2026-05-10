@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 # Add Telegram Interactive Bot commands
@@ -21,14 +21,14 @@ Add the first Telegram Interactive Bot commands for the first slice. The Owner s
 
 ## Acceptance criteria
 
-- [ ] Telegram bot can run locally in polling mode.
-- [ ] `/geeknews` returns a concise list of recent GeekNews items and includes stored summaries when available.
-- [ ] `/cost` returns concise OpenRouter spend and usage metrics.
-- [ ] Telegram responses include dashboard links or source links where appropriate without becoming long-form reports.
-- [ ] Empty states are handled when no GeekNews items or AI usage records exist.
-- [ ] Backend/API failures are handled with clear Telegram messages.
-- [ ] Telegram command formatting is covered by pure-function tests.
-- [ ] Command handler tests cover `/geeknews`, `/cost`, empty results, and backend error responses.
+- [x] Telegram bot can run locally in polling mode.
+- [x] `/geeknews` returns a concise list of recent GeekNews items and includes stored summaries when available.
+- [x] `/cost` returns concise OpenRouter spend and usage metrics.
+- [x] Telegram responses include dashboard links or source links where appropriate without becoming long-form reports.
+- [x] Empty states are handled when no GeekNews items or AI usage records exist.
+- [x] Backend/API failures are handled with clear Telegram messages.
+- [x] Telegram command formatting is covered by pure-function tests.
+- [x] Command handler tests cover `/geeknews`, `/cost`, empty results, and backend error responses.
 
 ## Blocked by
 
