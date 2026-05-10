@@ -9,12 +9,13 @@ from trendboda.ai import (
     default_ai_routes,
 )
 from trendboda.exceptions import GeekNewsItemNotFound, GeekNewsSummaryFailed
-from trendboda.repositories import GeekNewsRepository, GeekNewsSummary
+from trendboda.repositories import AIUsageRepository, GeekNewsRepository, GeekNewsSummary
 
 
 @dataclass(frozen=True)
 class GeekNewsSummaryService:
     repository: GeekNewsRepository
+    ai_usage_repository: AIUsageRepository
     gateway: OpenRouterGateway
     pricing_catalog: OpenRouterPricingCatalog
 
@@ -53,7 +54,7 @@ class GeekNewsSummaryService:
             completion_tokens=result.completion_tokens,
             pricing=pricing,
         )
-        await self.repository.record_ai_usage(
+        await self.ai_usage_repository.record_ai_usage(
             feature=AIFeature.GEEKNEWS_SUMMARY,
             status=result.status,
             requested_models=requested_models,

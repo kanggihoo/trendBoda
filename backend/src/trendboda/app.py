@@ -4,10 +4,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from trendboda import database
-from trendboda.api.ai_cost import router as ai_cost_router
+from trendboda.api.controllers.ai_cost import router as ai_cost_router
+from trendboda.api.controllers.geeknews import router as geeknews_router
+from trendboda.api.controllers.health import router as health_router
 from trendboda.api.exception_handlers import register_exception_handlers
-from trendboda.api.geeknews import router as geeknews_router
-from trendboda.api.health import router as health_router
 from trendboda.api.middleware import RequestIdMiddleware
 from trendboda.config import get_settings
 from trendboda.repositories import Repositories

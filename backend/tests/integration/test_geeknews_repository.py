@@ -6,7 +6,7 @@ import pytest
 
 from trendboda.ai import AIFeature, AIUsageStatus
 from trendboda.geeknews import GeekNewsItem
-from trendboda.repositories import GeekNewsRepository
+from trendboda.repositories import AIUsageRepository, GeekNewsRepository
 
 
 @pytest.mark.integration
@@ -46,6 +46,7 @@ async def test_geeknews_repository_upserts_summary_and_records_ai_usage(
     pool = await asyncpg.create_pool(migrated_database_url)
     try:
         repository = GeekNewsRepository(pool)
+        ai_usage_repository = AIUsageRepository(pool)
         run_id = await repository.record_fetch_run(status="success", item_count=1)
         await repository.upsert_items(
             fetch_run_id=run_id,
@@ -72,7 +73,7 @@ async def test_geeknews_repository_upserts_summary_and_records_ai_usage(
             summary="Replacement summary",
             model="google/gemini-2.5-flash-lite",
         )
-        usage_id = await repository.record_ai_usage(
+        usage_id = await ai_usage_repository.record_ai_usage(
             feature=AIFeature.GEEKNEWS_SUMMARY,
             status=AIUsageStatus.SUCCESS,
             requested_models=["openai/gpt-4.1-nano", "google/gemini-2.5-flash-lite"],

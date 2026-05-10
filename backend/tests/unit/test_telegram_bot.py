@@ -11,6 +11,7 @@ from trendboda.telegram_bot import (
     GeekNewsTelegramItem,
     TelegramInteractiveBot,
     TelegramPollingRunner,
+    TelegramSender,
     build_polling_runner,
     configure_logging,
     format_cost_message,
@@ -342,6 +343,22 @@ def test_configure_logging_suppresses_httpx_request_urls() -> None:
     configure_logging()
 
     assert logging.getLogger("httpx").level == logging.WARNING
+
+
+@pytest.mark.asyncio
+async def test_sender_posts_message_to_owner_chat() -> None:
+    sender = TelegramSender(token="test-token")
+
+    with respx.mock(base_url="https://api.telegram.org") as api:
+        send_message = api.post("/bottest-token/sendMessage").mock(
+            return_value=Response(200, json={"ok": True, "result": {}})
+        )
+
+        await sender.send_message(chat_id=123456789, text="TrendBoda smoke message")
+
+    assert send_message.calls.last.request.content == (
+        b'{"chat_id":123456789,"text":"TrendBoda smoke message"}'
+    )
 
 
 @pytest.mark.asyncio

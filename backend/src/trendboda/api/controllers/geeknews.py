@@ -46,7 +46,8 @@ async def list_geeknews_items(
     )
 
 
-@router.post("/fetch")
+@router.post("/fetch-runs")
+@router.post("/fetch", deprecated=True)
 async def fetch_geeknews(
     repositories: RepositoriesDep,
     provider: GeekNewsProviderDep,
@@ -73,7 +74,8 @@ async def get_geeknews_summary(
     return _required_summary_response(summary)
 
 
-@router.post("/items/{item_id}/summary")
+@router.post("/items/{item_id}/summary-runs")
+@router.post("/items/{item_id}/summary", deprecated=True)
 async def generate_geeknews_summary(
     item_id: int,
     repositories: RepositoriesDep,
@@ -82,6 +84,7 @@ async def generate_geeknews_summary(
 ) -> GeekNewsSummaryResponse:
     summary = await GeekNewsSummaryService(
         repository=repositories.geeknews,
+        ai_usage_repository=repositories.ai_usage,
         gateway=gateway,
         pricing_catalog=pricing_catalog,
     ).generate(item_id=item_id)

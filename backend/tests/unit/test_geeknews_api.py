@@ -3,6 +3,7 @@ from decimal import Decimal
 from typing import cast
 
 from fastapi.testclient import TestClient
+
 from trendboda.ai import AIUsageStatus
 from trendboda.api.dependencies import get_geeknews_provider, get_repositories
 from trendboda.app import app
@@ -33,7 +34,6 @@ class FakeGeekNewsRepository:
                 generated_at=datetime(2026, 5, 9, 10, 6, tzinfo=UTC),
             )
         }
-        self.ai_usage_records: list[dict[str, object]] = []
 
     async def list_recent_items(self, *, limit: int) -> list[StoredGeekNewsItem]:
         return self.items[:limit]
@@ -75,14 +75,19 @@ class FakeGeekNewsRepository:
         self.summaries[item_id] = stored
         return stored
 
+class FakeAIUsageRepository:
+    def __init__(self) -> None:
+        self.records: list[dict[str, object]] = []
+
     async def record_ai_usage(self, **record: object) -> int:
-        self.ai_usage_records.append(record)
-        return len(self.ai_usage_records)
+        self.records.append(record)
+        return len(self.records)
 
 
 class FakeRepositories:
     def __init__(self) -> None:
         self.geeknews = FakeGeekNewsRepository()
+        self.ai_usage = FakeAIUsageRepository()
 
 
 class FakeProvider:
@@ -189,7 +194,7 @@ def test_fetch_geeknews_records_run_and_insert_count() -> None:
     app.dependency_overrides[get_geeknews_provider] = FakeProvider
     try:
         client = TestClient(app)
-        response = client.post("/geeknews/fetch")
+        response = client.post("/geeknews/fetch-runs")
     finally:
         app.dependency_overrides.clear()
 
@@ -206,7 +211,7 @@ def test_fetch_geeknews_records_failure_run() -> None:
     app.dependency_overrides[get_geeknews_provider] = FailingProvider
     try:
         client = TestClient(app)
-        response = client.post("/geeknews/fetch")
+        response = client.post("/geeknews/fetch-runs")
     finally:
         app.dependency_overrides.clear()
 
@@ -254,7 +259,7 @@ def test_generate_geeknews_summary_stores_summary_and_usage() -> None:
     app.dependency_overrides[get_pricing_catalog] = FakePricingCatalog
     try:
         client = TestClient(app)
-        response = client.post("/geeknews/items/1/summary")
+        response = client.post("/geeknews/items/1/summary-runs")
     finally:
         app.dependency_overrides.clear()
 
@@ -265,7 +270,7 @@ def test_generate_geeknews_summary_stores_summary_and_usage() -> None:
     assert messages[1]["content"] == (
         "Title: Stored signal\nURL: https://news.example.com/1\nContent: • Stored item body"
     )
-    assert repositories.geeknews.ai_usage_records == [
+    assert repositories.ai_usage.records == [
         {
             "feature": "geeknews_summary",
             "status": "success",
@@ -293,12 +298,21 @@ def test_generate_geeknews_summary_records_failed_usage() -> None:
     app.dependency_overrides[get_pricing_catalog] = FakePricingCatalog
     try:
         client = TestClient(app)
-        response = client.post("/geeknews/items/1/summary")
+        response = client.post("/geeknews/items/1/summary-runs")
     finally:
         app.dependency_overrides.clear()
 
     assert response.status_code == 502
     assert response.json()["error"]["code"] == "geeknews_summary_failed"
     assert repositories.geeknews.summaries == {}
-    assert repositories.geeknews.ai_usage_records[0]["status"] == "failure"
-    assert repositories.geeknews.ai_usage_records[0]["error_message"] == "rate limited"
+    assert repositories.ai_usage.records[0]["status"] == "failure"
+    assert repositories.ai_usage.records[0]["error_message"] == "rate limited"
+
+
+def test_legacy_action_endpoints_remain_deprecated_aliases() -> None:
+    schema = app.openapi()
+
+    assert schema["paths"]["/geeknews/fetch"]["post"]["deprecated"] is True
+    assert schema["paths"]["/geeknews/items/{item_id}/summary"]["post"]["deprecated"] is True
+    assert "/geeknews/fetch-runs" in schema["paths"]
+    assert "/geeknews/items/{item_id}/summary-runs" in schema["paths"]

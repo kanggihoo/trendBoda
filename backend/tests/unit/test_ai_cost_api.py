@@ -51,6 +51,44 @@ class FakeRepositories:
         self.ai_usage = FakeAIUsageRepository()
 
 
+class GroupedAIUsageRepository(FakeAIUsageRepository):
+    async def summarize_ai_cost(self, *, monthly_budget_usd: str) -> dict[str, object]:
+        summary = await super().summarize_ai_cost(monthly_budget_usd=monthly_budget_usd)
+        summary["by_date"] = [
+            {
+                "date": "2026-05-10",
+                "estimated_cost_usd": "0.001",
+                "request_count": 1,
+                "average_latency_ms": 120,
+                "failure_count": 0,
+            }
+        ]
+        summary["by_model"] = [
+            {
+                "model": "openai/gpt-4.1-nano",
+                "estimated_cost_usd": "0.001",
+                "request_count": 1,
+                "average_latency_ms": 120,
+                "failure_count": 0,
+            }
+        ]
+        summary["by_feature"] = [
+            {
+                "feature": "geeknews_summary",
+                "estimated_cost_usd": "0.001",
+                "request_count": 1,
+                "average_latency_ms": 120,
+                "failure_count": 0,
+            }
+        ]
+        return summary
+
+
+class GroupedRepositories:
+    def __init__(self) -> None:
+        self.ai_usage = GroupedAIUsageRepository()
+
+
 def test_ai_cost_summary_returns_empty_product_dashboard_state() -> None:
     app.dependency_overrides[get_repositories] = FakeRepositories
     try:
@@ -76,6 +114,38 @@ def test_ai_cost_summary_returns_empty_product_dashboard_state() -> None:
             "estimated_monthly_cost_usd": "0",
             "percent_used": "0",
         },
+    }
+
+
+def test_ai_cost_summary_returns_typed_group_fields() -> None:
+    app.dependency_overrides[get_repositories] = GroupedRepositories
+    try:
+        client = TestClient(app)
+        response = client.get("/ai/cost/summary")
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json()["by_date"][0] == {
+        "estimated_cost_usd": "0.001",
+        "request_count": 1,
+        "average_latency_ms": 120,
+        "failure_count": 0,
+        "date": "2026-05-10",
+    }
+    assert response.json()["by_model"][0] == {
+        "estimated_cost_usd": "0.001",
+        "request_count": 1,
+        "average_latency_ms": 120,
+        "failure_count": 0,
+        "model": "openai/gpt-4.1-nano",
+    }
+    assert response.json()["by_feature"][0] == {
+        "estimated_cost_usd": "0.001",
+        "request_count": 1,
+        "average_latency_ms": 120,
+        "failure_count": 0,
+        "feature": "geeknews_summary",
     }
 
 
