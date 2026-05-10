@@ -8,10 +8,18 @@ type GeekNewsItem = {
   source_url: string;
   published_at: string | null;
   fetched_at: string;
+  summary: GeekNewsSummary | null;
 };
 
 type GeekNewsResponse = {
   items: GeekNewsItem[];
+};
+
+type GeekNewsSummary = {
+  item_id: number;
+  summary: string;
+  model: string;
+  generated_at: string;
 };
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000";
@@ -69,14 +77,21 @@ export function GeekNewsList() {
           className="grid items-center gap-md border-b border-hairline py-md sm:grid-cols-[minmax(0,1fr)_auto]"
           key={item.id}
         >
-          <a
-            className="[overflow-wrap:anywhere] font-semibold text-ink no-underline hover:underline"
-            href={item.source_url}
-            rel="noreferrer"
-            target="_blank"
-          >
-            {item.title}
-          </a>
+          <div className="grid min-w-0 gap-xs">
+            <a
+              className="[overflow-wrap:anywhere] font-semibold text-ink no-underline hover:underline"
+              href={item.source_url}
+              rel="noreferrer"
+              target="_blank"
+            >
+              {item.title}
+            </a>
+            {item.summary?.summary ? (
+              <p className="max-w-[680px] text-body-sm text-ink-muted">
+                {item.summary.summary}
+              </p>
+            ) : null}
+          </div>
           <div
             className="grid gap-xs text-left sm:justify-items-end sm:text-right"
             aria-label={`${item.title} timeline`}

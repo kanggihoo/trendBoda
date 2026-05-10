@@ -100,3 +100,7 @@ for (const stateText of [
 if (!geeknewsList.includes("Published") || !geeknewsList.includes("Fetched")) {
   throw new Error("Dashboard shell must show both publish time and fetch time.");
 }
+
+if (!geeknewsList.includes("summary?.summary")) {
+  throw new Error("Dashboard shell must show stored GeekNews summaries when present.");
+}

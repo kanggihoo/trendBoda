@@ -11,11 +11,21 @@ async def test_geeknews_tables_are_created(migrated_database_url: str) -> None:
             SELECT table_name
             FROM information_schema.tables
             WHERE table_schema = 'public'
-              AND table_name IN ('geeknews_fetch_runs', 'geeknews_items')
+              AND table_name IN (
+                'ai_usage_records',
+                'geeknews_fetch_runs',
+                'geeknews_items',
+                'geeknews_summaries'
+              )
             ORDER BY table_name
             """
         )
     finally:
         await connection.close()
 
-    assert [row["table_name"] for row in rows] == ["geeknews_fetch_runs", "geeknews_items"]
+    assert [row["table_name"] for row in rows] == [
+        "ai_usage_records",
+        "geeknews_fetch_runs",
+        "geeknews_items",
+        "geeknews_summaries",
+    ]

@@ -10,6 +10,7 @@ class GeekNewsItemResponse(BaseModel):
     source_url: str
     published_at: str | None
     fetched_at: str
+    summary: "GeekNewsSummaryResponse | None" = None
 
 
 class GeekNewsItemsResponse(BaseModel):
@@ -20,3 +21,10 @@ class GeekNewsFetchResponse(BaseModel):
     fetch_run_id: int
     fetched_count: int
     inserted_count: int
+
+
+class GeekNewsSummaryResponse(BaseModel):
+    item_id: int
+    summary: str
+    model: str
+    generated_at: str
