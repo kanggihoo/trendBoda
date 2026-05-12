@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from trendboda.api.dependencies import (
-    GeekNewsProviderDep,
+    GeekNewsFetchServiceDep,
     RepositoriesDep,
 )
 from trendboda.api.schemas import (
@@ -9,7 +9,6 @@ from trendboda.api.schemas import (
     GeekNewsItemResponse,
     GeekNewsItemsResponse,
 )
-from trendboda.services.geeknews import GeekNewsFetchService
 
 router = APIRouter(prefix="/geeknews")
 
@@ -39,13 +38,9 @@ async def list_geeknews_items(
 @router.post("/fetch-runs")
 @router.post("/fetch", deprecated=True)
 async def fetch_geeknews(
-    repositories: RepositoriesDep,
-    provider: GeekNewsProviderDep,
+    fetch_service: GeekNewsFetchServiceDep,
 ) -> GeekNewsFetchResponse:
-    result = await GeekNewsFetchService(
-        repository=repositories.geeknews,
-        provider=provider,
-    ).fetch()
+    result = await fetch_service.fetch()
     return GeekNewsFetchResponse(
         fetch_run_id=result.fetch_run_id,
         fetched_count=result.fetched_count,

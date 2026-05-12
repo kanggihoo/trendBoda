@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+from trendboda.geeknews import StoredGeekNewsItem
+
 
 @dataclass(frozen=True)
 class GeekNewsSummary:
@@ -8,3 +10,9 @@ class GeekNewsSummary:
     summary: str
     model: str
     generated_at: datetime
+
+
+@dataclass(frozen=True)
+class GeekNewsInsertResult:
+    inserted_count: int
+    inserted_items: list[StoredGeekNewsItem]

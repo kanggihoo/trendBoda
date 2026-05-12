@@ -26,12 +26,14 @@ async def test_geeknews_repository_records_fetch_and_prevents_duplicates(
             published_at=datetime(2026, 5, 9, 10, 0, tzinfo=UTC),
         )
 
-        first_count = await repository.upsert_items(fetch_run_id=run_id, items=[item])
-        second_count = await repository.upsert_items(fetch_run_id=run_id, items=[item])
+        first_result = await repository.insert_new_items(fetch_run_id=run_id, items=[item])
+        second_result = await repository.insert_new_items(fetch_run_id=run_id, items=[item])
         recent_items = await repository.list_recent_items(limit=10)
 
-        assert first_count == 1
-        assert second_count == 0
+        assert first_result.inserted_count == 1
+        assert len(first_result.inserted_items) == 1
+        assert second_result.inserted_count == 0
+        assert len(second_result.inserted_items) == 0
         assert len(recent_items) == 1
         assert recent_items[0].title == "First signal"
         assert recent_items[0].fetch_run_id == run_id
@@ -48,7 +50,7 @@ async def test_geeknews_repository_upserts_summary_and_records_ai_usage(
         repository = GeekNewsRepository(pool)
         ai_usage_repository = AIUsageRepository(pool)
         run_id = await repository.record_fetch_run(status="success", item_count=1)
-        await repository.upsert_items(
+        await repository.insert_new_items(
             fetch_run_id=run_id,
             items=[
                 GeekNewsItem(

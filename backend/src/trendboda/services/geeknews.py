@@ -3,6 +3,7 @@ from typing import Protocol
 
 from trendboda.exceptions import GeekNewsFetchFailed
 from trendboda.geeknews import GeekNewsItem
+from trendboda.repositories.types import GeekNewsInsertResult
 
 
 class GeekNewsRepository(Protocol):
@@ -14,7 +15,7 @@ class GeekNewsRepository(Protocol):
         error_message: str | None = None,
     ) -> int: ...
 
-    async def upsert_items(self, *, fetch_run_id: int, items: list[GeekNewsItem]) -> int: ...
+    async def insert_new_items(self, *, fetch_run_id: int, items: list[GeekNewsItem]) -> GeekNewsInsertResult: ...
 
 
 class GeekNewsProvider(Protocol):
@@ -48,9 +49,9 @@ class GeekNewsFetchService:
             status="success",
             item_count=len(items),
         )
-        inserted_count = await self.repository.upsert_items(fetch_run_id=fetch_run_id, items=items)
+        insert_result = await self.repository.insert_new_items(fetch_run_id=fetch_run_id, items=items)
         return GeekNewsFetchResult(
             fetch_run_id=fetch_run_id,
             fetched_count=len(items),
-            inserted_count=inserted_count,
+            inserted_count=insert_result.inserted_count,
         )

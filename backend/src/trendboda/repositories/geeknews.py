@@ -1,7 +1,7 @@
 from typing import Any
 
 from trendboda.geeknews import GEEKNEWS_SOURCE_NAME, GeekNewsItem, StoredGeekNewsItem
-from trendboda.repositories.types import GeekNewsSummary
+from trendboda.repositories.types import GeekNewsInsertResult, GeekNewsSummary
 
 
 class GeekNewsRepository:
@@ -28,46 +28,56 @@ class GeekNewsRepository:
         )
         return int(row["id"])
 
-    async def upsert_items(self, *, fetch_run_id: int, items: list[GeekNewsItem]) -> int:
-        inserted_count = 0
-        async with self._pool.acquire() as connection:
-            async with connection.transaction():
-                for item in items:
-                    result = await connection.execute(
-                        """
-                        INSERT INTO geeknews_items (
-                          fetch_run_id,
-                          source_name,
-                          external_id,
-                          title,
-                          source_url,
-                          content_raw_html,
-                          content_text,
-                          published_at
-                        )
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-                        ON CONFLICT (source_name, external_id) DO UPDATE
-                        SET fetch_run_id = EXCLUDED.fetch_run_id,
-                            title = EXCLUDED.title,
-                            source_url = EXCLUDED.source_url,
-                            content_raw_html = EXCLUDED.content_raw_html,
-                            content_text = EXCLUDED.content_text,
-                            published_at = EXCLUDED.published_at,
-                            updated_at = now()
-                        WHERE FALSE
-                        """,
-                        fetch_run_id,
-                        GEEKNEWS_SOURCE_NAME,
-                        item.external_id,
-                        item.title,
-                        item.source_url,
-                        item.content_raw_html,
-                        item.content_text,
-                        item.published_at,
-                    )
-                    if result == "INSERT 0 1":
-                        inserted_count += 1
-        return inserted_count
+    async def insert_new_items(self, *, fetch_run_id: int, items: list[GeekNewsItem]) -> GeekNewsInsertResult:
+        if not items:
+            return GeekNewsInsertResult(inserted_count=0, inserted_items=[])
+
+        external_ids = [item.external_id for item in items]
+        titles = [item.title for item in items]
+        source_urls = [item.source_url for item in items]
+        content_raw_htmls = [item.content_raw_html for item in items]
+        content_texts = [item.content_text for item in items]
+        published_ats = [item.published_at for item in items]
+
+        rows = await self._pool.fetch(
+            """
+            INSERT INTO geeknews_items (
+                fetch_run_id,
+                source_name,
+                external_id,
+                title,
+                source_url,
+                content_raw_html,
+                content_text,
+                published_at
+            )
+            SELECT $1, $2, external_id, title, source_url, content_raw_html, content_text, published_at
+            FROM UNNEST(
+                $3::text[],
+                $4::text[],
+                $5::text[],
+                $6::text[],
+                $7::text[],
+                $8::timestamptz[]
+            ) AS t(external_id, title, source_url, content_raw_html, content_text, published_at)
+            ON CONFLICT (source_name, external_id) DO NOTHING
+            RETURNING id, fetch_run_id, external_id, title, source_url, content_text, published_at, fetched_at
+            """,
+            fetch_run_id,
+            GEEKNEWS_SOURCE_NAME,
+            external_ids,
+            titles,
+            source_urls,
+            content_raw_htmls,
+            content_texts,
+            published_ats,
+        )
+
+        inserted_items = [_stored_geeknews_item(row) for row in rows]
+        return GeekNewsInsertResult(
+            inserted_count=len(inserted_items),
+            inserted_items=inserted_items,
+        )
 
     async def list_recent_items(self, *, limit: int) -> list[StoredGeekNewsItem]:
         rows = await self._pool.fetch(

@@ -1,7 +1,9 @@
 import pytest
 from trendboda.exceptions import GeekNewsFetchFailed
-from trendboda.geeknews import GeekNewsItem
+from trendboda.geeknews import GeekNewsItem, StoredGeekNewsItem
 from trendboda.services.geeknews import GeekNewsFetchService
+from trendboda.repositories.types import GeekNewsInsertResult
+from datetime import datetime, UTC
 
 
 class FakeGeekNewsRepository:
@@ -21,9 +23,22 @@ class FakeGeekNewsRepository:
         )
         return 10
 
-    async def upsert_items(self, *, fetch_run_id: int, items: list[GeekNewsItem]) -> int:
+    async def insert_new_items(self, *, fetch_run_id: int, items: list[GeekNewsItem]) -> GeekNewsInsertResult:
         self.upserted_items = items
-        return len(items)
+        stored_items = [
+            StoredGeekNewsItem(
+                id=idx,
+                fetch_run_id=fetch_run_id,
+                external_id=item.external_id,
+                title=item.title,
+                source_url=item.source_url,
+                content_text=item.content_text,
+                published_at=item.published_at,
+                fetched_at=datetime.now(UTC),
+            )
+            for idx, item in enumerate(items, 1)
+        ]
+        return GeekNewsInsertResult(inserted_count=len(items), inserted_items=stored_items)
 
 
 class FakeProvider:

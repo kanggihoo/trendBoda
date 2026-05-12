@@ -2,9 +2,10 @@ from datetime import UTC, datetime
 
 from fastapi.testclient import TestClient
 
-from trendboda.api.dependencies import get_geeknews_provider, get_repositories
+from trendboda.api.dependencies import get_geeknews_fetch_service, get_repositories
 from trendboda.app import app
 from trendboda.geeknews import GeekNewsItem, StoredGeekNewsItem
+from trendboda.services.geeknews import GeekNewsFetchService
 
 
 class FakeGeekNewsRepository:
@@ -41,8 +42,25 @@ class FakeGeekNewsRepository:
         )
         return 10
 
-    async def upsert_items(self, *, fetch_run_id: int, items: list[GeekNewsItem]) -> int:
-        return len(items)
+    async def insert_new_items(self, *, fetch_run_id: int, items: list[GeekNewsItem]) -> "GeekNewsInsertResult":
+        from trendboda.repositories.types import GeekNewsInsertResult
+        from trendboda.geeknews import StoredGeekNewsItem
+        from datetime import datetime, UTC
+        
+        stored_items = [
+            StoredGeekNewsItem(
+                id=idx,
+                fetch_run_id=fetch_run_id,
+                external_id=item.external_id,
+                title=item.title,
+                source_url=item.source_url,
+                content_text=item.content_text,
+                published_at=item.published_at,
+                fetched_at=datetime.now(UTC),
+            )
+            for idx, item in enumerate(items, 1)
+        ]
+        return GeekNewsInsertResult(inserted_count=len(items), inserted_items=stored_items)
 
 class FakeAIUsageRepository:
     def __init__(self) -> None:
@@ -136,7 +154,10 @@ def test_list_geeknews_items_returns_empty_list() -> None:
 def test_fetch_geeknews_records_run_and_insert_count() -> None:
     repositories = FakeRepositories()
     app.dependency_overrides[get_repositories] = lambda: repositories
-    app.dependency_overrides[get_geeknews_provider] = FakeProvider
+    app.dependency_overrides[get_geeknews_fetch_service] = lambda: GeekNewsFetchService(
+        repository=repositories.geeknews,
+        provider=FakeProvider()
+    )
     try:
         client = TestClient(app)
         response = client.post("/geeknews/fetch-runs")
@@ -153,7 +174,10 @@ def test_fetch_geeknews_records_run_and_insert_count() -> None:
 def test_fetch_geeknews_records_failure_run() -> None:
     repositories = FakeRepositories()
     app.dependency_overrides[get_repositories] = lambda: repositories
-    app.dependency_overrides[get_geeknews_provider] = FailingProvider
+    app.dependency_overrides[get_geeknews_fetch_service] = lambda: GeekNewsFetchService(
+        repository=repositories.geeknews,
+        provider=FailingProvider()
+    )
     try:
         client = TestClient(app)
         response = client.post("/geeknews/fetch-runs")
