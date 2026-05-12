@@ -140,6 +140,22 @@ pnpm --dir web run lint
 pnpm --dir web run build
 ```
 
+### Scheduler
+
+TrendBoda uses a separate scheduler process to collect background items like GeekNews.
+
+Run once and exit (e.g., for cron or systemd timers):
+
+```bash
+uv --directory backend run python -m trendboda.scheduler run-once
+```
+
+Run forever (loops every `GEEKNEWS_SCHEDULER_INTERVAL_SECONDS`, default 7200):
+
+```bash
+uv --directory backend run python -m trendboda.scheduler run-forever
+```
+
 ## 4. 왜 `uv --directory backend`를 쓰나
 
 다음 두 명령은 비슷한 목적이다.

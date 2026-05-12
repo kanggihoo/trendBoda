@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     telegram_bot_token: str | None = None
     telegram_allowed_chat_ids: str = ""
     ai_monthly_budget_usd: str = Field(default="10.00")
+    geeknews_scheduler_interval_seconds: int = Field(default=7200)
 
     model_config = SettingsConfigDict(
         env_file=ROOT_DIR / ".env",
