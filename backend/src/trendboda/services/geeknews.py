@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from trendboda.exceptions import GeekNewsFetchFailed
-from trendboda.geeknews import GeekNewsItem
+from trendboda.geeknews import GeekNewsItem, StoredGeekNewsItem
 from trendboda.repositories.types import GeekNewsInsertResult
 
 
@@ -27,6 +27,7 @@ class GeekNewsFetchResult:
     fetch_run_id: int
     fetched_count: int
     inserted_count: int
+    inserted_items: list[StoredGeekNewsItem]
 
 
 @dataclass(frozen=True)
@@ -54,4 +55,5 @@ class GeekNewsFetchService:
             fetch_run_id=fetch_run_id,
             fetched_count=len(items),
             inserted_count=insert_result.inserted_count,
+            inserted_items=insert_result.inserted_items,
         )
