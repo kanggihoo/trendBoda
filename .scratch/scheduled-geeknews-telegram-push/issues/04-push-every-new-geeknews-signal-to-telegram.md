@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 # Push Every New GeekNews Signal To Telegram

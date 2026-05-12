@@ -4,6 +4,8 @@ from typing import Protocol
 
 from trendboda.exceptions import GeekNewsFetchFailed
 from trendboda.services.geeknews import GeekNewsFetchService
+from trendboda.telegram_bot.messages import format_geeknews_message
+from trendboda.telegram_bot.types import GeekNewsTelegramItem
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +19,7 @@ class ScheduledGeekNewsJobResult:
     fetched_count: int
     inserted_count: int
     pushed_count: int
+    failed_push_count: int
     skipped_push_reason: str | None
     error_message: str | None
 
@@ -36,6 +39,7 @@ class ScheduledGeekNewsJob:
                 fetched_count=0,
                 inserted_count=0,
                 pushed_count=0,
+                failed_push_count=0,
                 skipped_push_reason="Fetch failed",
                 error_message=str(exc),
             )
@@ -45,6 +49,7 @@ class ScheduledGeekNewsJob:
                 fetched_count=0,
                 inserted_count=0,
                 pushed_count=0,
+                failed_push_count=0,
                 skipped_push_reason="Database or unexpected error",
                 error_message=str(exc),
             )
@@ -54,6 +59,7 @@ class ScheduledGeekNewsJob:
                 fetched_count=fetch_result.fetched_count,
                 inserted_count=0,
                 pushed_count=0,
+                failed_push_count=0,
                 skipped_push_reason="No new items",
                 error_message=None,
             )
@@ -65,18 +71,39 @@ class ScheduledGeekNewsJob:
                 fetched_count=fetch_result.fetched_count,
                 inserted_count=fetch_result.inserted_count,
                 pushed_count=0,
+                failed_push_count=0,
                 skipped_push_reason=skipped_reason,
                 error_message=None,
             )
 
-        # Telegram push will be implemented here later
         pushed_count = 0
-        skipped_push_reason = None
+        failed_push_count = 0
+
+        for chat_id in self.telegram_allowed_chat_ids:
+            for item in fetch_result.inserted_items:
+                telegram_item = GeekNewsTelegramItem(
+                    title=item.title,
+                    source_url=item.source_url,
+                    content_text=item.content_text,
+                )
+                text = format_geeknews_message([telegram_item])
+                try:
+                    await self.telegram_sender.send_message(chat_id=chat_id, text=text)
+                    pushed_count += 1
+                except Exception as exc:
+                    logger.exception(
+                        "Failed to send GeekNews Signal %d to Telegram chat %d: %s",
+                        item.id,
+                        chat_id,
+                        exc,
+                    )
+                    failed_push_count += 1
         
         return ScheduledGeekNewsJobResult(
             fetched_count=fetch_result.fetched_count,
             inserted_count=fetch_result.inserted_count,
             pushed_count=pushed_count,
-            skipped_push_reason=skipped_push_reason,
+            failed_push_count=failed_push_count,
+            skipped_push_reason=None,
             error_message=None,
         )
