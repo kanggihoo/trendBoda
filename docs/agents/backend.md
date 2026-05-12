@@ -8,6 +8,7 @@ Use this when working on the TrendBoda FastAPI backend, Python tests, database m
 - Read `docs/adr/0003-fastapi-asyncpg-repositories-and-dbmate.md` before changing data access, repository, uv, or dbmate patterns.
 - Read `docs/adr/0007-local-development-runs-apps-on-host-with-dockerized-postgres.md` before changing local process topology.
 - Read `.scratch/first-slice/PRD.md` and `docs/plan/first-slice.md` before changing first-slice scope or implementation order.
+- Read `.scratch/scheduled-geeknews-telegram-push/PRD.md` and `docs/plan/geeknews-scheduler.md` before changing scheduled GeekNews collection, scheduler workers, Telegram push, or GeekNews bulk insert behavior.
 
 ## Project Boundary
 
@@ -82,3 +83,14 @@ dbmate --env-file .env --migrations-dir db/migrations status
 - Prevent duplicate GeekNews items with a stable external identifier.
 - Repository classes are the Python-to-database boundary. Do not build ad hoc SQL in services.
 - Use dbmate migrations as the source of truth for database schema.
+
+## Scheduled GeekNews Direction
+
+- Keep scheduled GeekNews collection in a separate backend process, not inside FastAPI background tasks.
+- Share backend bootstrap/factory setup between FastAPI and scheduler workers for settings, DB pool, repositories, provider adapters, services, and Telegram sender setup.
+- Support a one-shot scheduler mode for cron/systemd-style execution and a forever mode for a simple local or server worker.
+- Parse the full current GeekNews RSS feed each run, then bulk insert new items with `ON CONFLICT DO NOTHING`.
+- Preserve first-seen GeekNews item snapshots; routine scheduled fetches should not rewrite existing item rows.
+- Base Telegram push on newly inserted GeekNews Signals returned by repository insert behavior, and send each new Signal as its own Telegram message.
+- Keep scheduler failure policy explicit: fetch/parse/DB failures stop push for that run, Telegram message failures are isolated per item, and `run-forever` continues to the next tick.
+- Reuse existing Telegram token, allowed chat ID, sender, and formatting conventions where possible.

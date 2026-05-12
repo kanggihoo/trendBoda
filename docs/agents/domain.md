@@ -28,3 +28,15 @@ If the concept needed is not in the glossary yet, either the work is using langu
 ## Flag ADR Conflicts
 
 If output contradicts an existing ADR, surface it explicitly rather than silently overriding it.
+
+## Documentation Maintenance
+
+When a PRD, plan, or resolved design discussion changes how future agents should work, do not update only `.scratch/`.
+
+- Domain language or product meaning changes belong in `CONTEXT.md`.
+- Implementation direction, sequencing, or progress tracking belongs in `docs/plan/*.md`.
+- Repeatable agent working rules belong in the relevant `docs/agents/*.md` file.
+- Hard-to-reverse architecture decisions with meaningful trade-offs belong in `docs/adr/*.md`.
+- Concrete implementation work belongs in `.scratch/<feature>/issues/*.md`.
+
+When publishing or changing a PRD, check whether the decision also needs a `docs/plan/` note and whether backend, web, or domain agent notes need new read-before-work guidance.

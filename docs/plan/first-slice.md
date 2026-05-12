@@ -2,6 +2,15 @@
 
 The first TrendBoda implementation slice validates the core loop before market data, disclosures, GitHub trends, cloud deployment, or the Rust operations CLI are added.
 
+## Status
+
+The first slice is treated as complete when the local issue tracker PRD and its implementation issues use `Status: done`.
+
+Follow-up PRDs now carry behavior changes discovered after the first slice:
+
+- `.scratch/geeknews-without-summary/PRD.md`: remove GeekNews summary from the default GeekNews flow while keeping OpenRouter available for other AI-backed features.
+- `.scratch/scheduled-geeknews-telegram-push/PRD.md`: add scheduled GeekNews collection and Telegram push as a separate worker process.
+
 ## Scope
 
 - Fetch and parse GeekNews RSS from `https://feeds.feedburner.com/geeknews-feed`
@@ -18,6 +27,7 @@ The first TrendBoda implementation slice validates the core loop before market d
 - Stock prices and price snapshots
 - SEC EDGAR and OpenDART disclosures
 - GitHub trend collection
+- Scheduled GeekNews collection and automatic Telegram push
 - EC2 deployment
 - Caddy and domain-backed HTTPS
 - OpenTofu infrastructure code
