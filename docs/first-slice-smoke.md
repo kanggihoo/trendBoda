@@ -83,6 +83,7 @@ Useful local overrides:
 - `NEXT_PUBLIC_API_BASE_URL`: web dashboard API base URL. Use `http://127.0.0.1:8000` locally.
 - `API_BASE_URL`: smoke script API URL. Defaults to `http://127.0.0.1:8000`.
 - `WEB_BASE_URL`: smoke script web URL. Defaults to `http://127.0.0.1:3000`.
+- `GEEKNEWS_SCHEDULER_INTERVAL_SECONDS`: overrides the default 7200 (two-hour) interval for the scheduler's run-forever mode.
 Can be omitted in no-network/mocked mode:
 
 - `OPENROUTER_API_KEY`
@@ -115,3 +116,5 @@ Out of scope:
 - Grafana
 - Vercel deployment
 - Rust Ops CLI
+- delivery tracking storage
+- automatic retry queues
