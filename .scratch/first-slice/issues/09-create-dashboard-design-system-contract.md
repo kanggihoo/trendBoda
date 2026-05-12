@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 # Create dashboard design system contract

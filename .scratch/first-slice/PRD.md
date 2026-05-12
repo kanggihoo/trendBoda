@@ -1,14 +1,16 @@
-Status: ready-for-agent
+Status: done
 
 # TrendBoda First Slice PRD
 
 ## Problem Statement
 
-The Owner wants TrendBoda to become a personal briefing system, but the full vision includes many difficult integrations: market prices, disclosures, news, Telegram, dashboard UI, AI cost tracking, and later cloud operations. Building all of that at once would make it hard to validate the core loop. The first implementation needs a small but real source that can prove TrendBoda can collect a Source, turn useful items into Signals, summarize them with OpenRouter, track AI cost, and show results through both the web dashboard and the Interactive Bot.
+The Owner wants TrendBoda to become a personal briefing system, but the full vision includes many difficult integrations: market prices, disclosures, news, Telegram, dashboard UI, AI cost tracking, and later cloud operations. Building all of that at once would make it hard to validate the core loop. The first implementation needs a small but real source that can prove TrendBoda can collect a Source, turn useful items into Signals, keep OpenRouter cost tracking available for AI-backed features, and show results through both the web dashboard and the Interactive Bot.
 
 ## Solution
 
-Build the first end-to-end slice around GeekNews RSS. TrendBoda will fetch and parse GeekNews RSS, store items with duplicate prevention, summarize selected items through OpenRouter, record AI usage and estimated cost, expose the data through FastAPI, show it in a Next.js dashboard, and support Telegram commands for recent GeekNews items and OpenRouter cost.
+Build the first end-to-end slice around GeekNews RSS. TrendBoda will fetch and parse GeekNews RSS through the GeekNews Provider, store GeekNews Signals with duplicate prevention, expose the data through FastAPI, show scannable GeekNews Signal rows in a Next.js dashboard, and support Telegram commands for recent GeekNews Signals and OpenRouter cost.
+
+OpenRouter-backed AI modules, model routing, AI usage records, pricing snapshots, and the AI Cost Dashboard remain available for future AI-backed TrendBoda features. GeekNews summary endpoints are not part of the public API; any historical stored summary rows are data compatibility only.
 
 This slice intentionally avoids market data, disclosures, cloud deployment, OpenTofu, and the Rust Ops CLI. It validates the core Source-to-Signal-to-briefing loop locally with Dockerized Postgres, uv-managed host-run FastAPI, and host-run Next.js.
 
@@ -23,10 +25,10 @@ This slice intentionally avoids market data, disclosures, cloud deployment, Open
 7. As the Owner, I want to open the original GeekNews item from the dashboard, so that I can inspect the source article.
 8. As the Owner, I want to see item publish time and fetch time, so that I can judge freshness.
 9. As the Owner, I want to trigger a GeekNews fetch manually during local development, so that I can test the collector without waiting for a scheduler.
-10. As the Owner, I want TrendBoda to summarize selected GeekNews items with OpenRouter, so that I can quickly understand what matters.
-11. As the Owner, I want AI summaries to be stored, so that summaries are reusable and not regenerated unnecessarily.
-12. As the Owner, I want summaries to link back to source items, so that I can verify AI output against the original content.
-13. As the Owner, I want AI usage recorded for every summary request, so that cost tracking is not optional or forgotten.
+10. As the Owner, I want OpenRouter-backed AI foundations to remain available outside the default GeekNews flow, so that future Market Questions, Investment Analysis, or Routine Briefings can use them.
+11. As the Owner, I want historical AI summary records to remain readable, so that prior local experiments do not break.
+12. As the Owner, I want any compatibility summary data to link back to source items, so that I can verify old AI output against the original content.
+13. As the Owner, I want AI usage recorded for every AI request, so that cost tracking is not optional or forgotten.
 14. As the Owner, I want failed AI requests recorded when possible, so that the AI Cost Dashboard reflects reliability as well as spend.
 15. As the Owner, I want TrendBoda to estimate OpenRouter cost from token usage and pricing snapshots, so that historical cost numbers stay stable.
 16. As the Owner, I want AI cost grouped by date, so that I can see daily spend.
@@ -40,9 +42,9 @@ This slice intentionally avoids market data, disclosures, cloud deployment, Open
 24. As the Owner, I want pricing metadata stored per request, so that later pricing changes do not rewrite the past.
 25. As the Owner, I want the FastAPI backend to expose health checks, so that local development and future operations can verify service status.
 26. As the Owner, I want the FastAPI backend to expose GeekNews item APIs, so that the dashboard and bot can read the same data.
-27. As the Owner, I want the FastAPI backend to expose summary APIs, so that summaries can be generated and displayed consistently.
+27. As the Owner, I want GeekNews summary APIs removed from the default public API surface.
 28. As the Owner, I want the FastAPI backend to expose AI cost APIs, so that the dashboard and bot can show usage.
-29. As the Owner, I want the Next.js dashboard to show GeekNews items and summaries, so that web viewing is useful from day one.
+29. As the Owner, I want the Next.js dashboard to show GeekNews Signals with title, GeekNews Item Content, publish time, fetch time, and links, so that web viewing is useful from day one.
 30. As the Owner, I want the Next.js dashboard to show OpenRouter cost metrics, so that spend is visible without opening Grafana.
 31. As the Owner, I want Telegram `/geeknews`, so that I can view recent GeekNews items from my phone.
 32. As the Owner, I want Telegram `/cost`, so that I can check OpenRouter spend from my phone.
@@ -57,27 +59,26 @@ This slice intentionally avoids market data, disclosures, cloud deployment, Open
 
 ## Implementation Decisions
 
-- Build around GeekNews RSS as the first Developer Trend Source because it has no API key requirement and exercises the collection, storage, AI, dashboard, and bot loop.
-- Use provider adapters with normalized results. The GeekNews RSS adapter returns stable application-level item data rather than exposing feed XML details.
-- Store GeekNews items with duplicate prevention based on a stable external identifier, preferring feed GUID when present and source URL when needed.
+- Build around GeekNews RSS as the first Developer Trend Source because it has no API key requirement and exercises the collection, storage, dashboard, bot, and AI cost visibility loop.
+- Use provider adapters with normalized results. The GeekNews Provider returns stable application-level GeekNews Signal data rather than exposing feed XML details.
+- Store GeekNews Signals with duplicate prevention based on a stable external identifier, preferring feed GUID when present and source URL when needed.
 - Record fetch runs separately from items so provider health and freshness can be inspected later.
 - Use FastAPI for the backend and asyncpg for Postgres access.
 - Use uv for Python dependency management and backend command execution.
 - Use repository classes as the database boundary. Application services do not build ad hoc SQL outside repositories.
 - Use dbmate migrations with explicit `migrate:up` and `migrate:down` SQL sections.
 - Run local Postgres through Docker Compose while FastAPI and Next.js run on the host.
-- Use OpenRouter only for summarization in this slice, not for raw RSS listing or deterministic status views.
+- Use OpenRouter only for AI-backed features, not for raw RSS listing, GeekNews Signal scanning, or deterministic status views.
 - Implement an OpenRouter gateway that normalizes request, response, token usage, latency, status, errors, and actual model string.
 - Represent AI features and models with enums, then route each feature to primary and fallback models through config.
 - Store AI usage records for successful and failed requests when possible.
 - Calculate estimated cost from response token usage and a request-time pricing snapshot.
 - Store prompt tokens, completion tokens, total tokens, model, feature, latency, status, estimated cost, pricing metadata, and request timestamp.
-- Store summaries separately from AI usage records and link summaries to source items and usage records.
-- The GeekNews summary feature uses the AI feature route for developer-trend summaries.
+- Keep historical summary storage readable if present, but do not expose GeekNews summary endpoints in the public API.
 - The AI Cost Dashboard groups OpenRouter usage by date, model, feature, request, and monthly budget progress.
-- The Next.js dashboard is the product UI for browsing GeekNews and cost data. Grafana remains out of scope for this slice.
+- The Next.js dashboard is the product UI for browsing GeekNews Signals and cost data. Grafana remains out of scope for this slice.
 - The Telegram Interactive Bot starts with polling for local development.
-- Telegram `/geeknews` returns a concise list of recent GeekNews items and may include short stored summaries when available.
+- Telegram `/geeknews` returns a concise list of recent GeekNews Signals with short text and source links, without AI-generated summary text.
 - Telegram `/cost` returns concise OpenRouter spend and usage metrics.
 - Cloud deployment, domain-backed HTTPS, Caddy, OpenTofu, and the Rust Ops CLI remain planned later work, not first-slice requirements.
 
@@ -86,13 +87,13 @@ This slice intentionally avoids market data, disclosures, cloud deployment, Open
 - Tests should verify external behavior and stable module contracts, not private implementation details.
 - GeekNews RSS parser tests should cover valid RSS, missing optional fields, HTML entities, duplicate identifiers, item ordering, and malformed XML failure behavior.
 - GeekNews provider adapter tests should use fixture XML rather than live network calls.
-- Repository tests should cover item insertion, duplicate prevention, fetch run recording, summary storage, AI usage storage, and cost aggregation queries.
-- Service tests should cover fetch orchestration, summarize orchestration, idempotency, and error handling.
+- Repository tests should cover item insertion, duplicate prevention, fetch run recording, AI usage storage, and cost aggregation queries.
+- Service tests should cover fetch orchestration, idempotency, and error handling.
 - OpenRouter gateway tests should mock HTTP responses and cover successful usage extraction, failed responses, latency recording, and fallback model behavior.
 - AI routing tests should verify feature-to-model mapping, env/config override behavior, and actual model string persistence.
 - Cost calculation tests should cover prompt/completion pricing, missing usage fields, zero-token responses, failed requests, and pricing snapshot persistence.
-- FastAPI tests should cover health, GeekNews list/fetch/summarize endpoints, AI cost endpoints, validation errors, and no-network test mode.
-- Dashboard tests should cover rendering GeekNews items, summary display, empty states, loading states, error states, cost grouping, and budget progress display.
+- FastAPI tests should cover health, GeekNews list/fetch behavior without summary dependency, absence of summary endpoints, AI cost endpoints, validation errors, and no-network test mode.
+- Dashboard tests should cover rendering GeekNews Signals without summary UI, empty states, loading states, error states, cost grouping, and budget progress display.
 - Telegram command tests should treat formatting as pure behavior and cover `/geeknews`, `/cost`, empty results, and backend error responses.
 - Local development smoke tests should verify Postgres starts, uv can run backend commands, migrations apply, API health returns OK, and dashboard can call the API.
 

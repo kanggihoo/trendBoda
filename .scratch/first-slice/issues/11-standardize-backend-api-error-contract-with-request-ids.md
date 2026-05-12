@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 # Standardize backend API error contract with request IDs

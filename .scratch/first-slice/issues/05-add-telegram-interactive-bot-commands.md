@@ -22,7 +22,7 @@ Add the first Telegram Interactive Bot commands for the first slice. The Owner s
 ## Acceptance criteria
 
 - [x] Telegram bot can run locally in polling mode.
-- [x] `/geeknews` returns a concise list of recent GeekNews items and includes stored summaries when available.
+- [x] `/geeknews` returns a concise list of recent GeekNews Signals with item text and source links, without AI-generated summary text.
 - [x] `/cost` returns concise OpenRouter spend and usage metrics.
 - [x] Telegram responses include dashboard links or source links where appropriate without becoming long-form reports.
 - [x] Empty states are handled when no GeekNews items or AI usage records exist.

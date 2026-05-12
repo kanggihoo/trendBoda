@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 # Move GeekNews fetch failures into service and global handlers

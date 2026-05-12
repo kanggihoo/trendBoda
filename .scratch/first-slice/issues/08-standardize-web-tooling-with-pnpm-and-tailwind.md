@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 # Standardize web tooling with pnpm, Tailwind, and shadcn/ui

@@ -1,7 +1,7 @@
 Status: done
 Type: AFK
 
-# Add OpenRouter summarization with usage records
+# Add OpenRouter AI foundation with usage records
 
 ## Parent
 
@@ -9,36 +9,36 @@ Type: AFK
 
 ## What to build
 
-Add OpenRouter-powered summarization for stored GeekNews items, using explicit AI feature and model routing with primary and fallback models. The completed slice should let the Owner generate and view stored summaries while every AI request records token usage, estimated cost, latency, status, actual model string, and pricing metadata.
+Add the OpenRouter-powered AI foundation, using explicit AI feature and model routing with primary and fallback models. GeekNews summary endpoints are removed from the public default API surface. Every AI request records token usage, estimated cost, latency, status, actual model string, and pricing metadata.
 
 ## User stories covered
 
-- 10. Summarize selected GeekNews items with OpenRouter
-- 11. Store AI summaries
-- 12. Link summaries back to source items
-- 13. Record AI usage for every summary request
+- 10. Preserve OpenRouter-backed AI foundations outside the default GeekNews owner flow
+- 11. Keep historical AI summaries readable
+- 12. Keep historical summary data compatible if present
+- 13. Record AI usage for every AI request
 - 14. Record failed AI requests when possible
 - 15. Estimate OpenRouter cost from usage and pricing snapshots
 - 21. Use explicit AI feature and model enums
 - 22. Support primary and fallback model routing
 - 23. Store actual OpenRouter model string
 - 24. Store pricing metadata per request
-- 27. Expose summary APIs
+- 27. Remove GeekNews summary APIs from the default public API surface
 - 39. Test routing, gateway, cost, storage, API, and dashboard behavior
 
 ## Acceptance criteria
 
-- [ ] AI feature and model enums exist for GeekNews summarization and configured model routes.
-- [ ] OpenRouter calls go through a gateway that normalizes response content, usage, latency, status, errors, and actual model string.
-- [ ] Primary and fallback model behavior is implemented according to feature routing config.
-- [ ] Summaries are stored and linked to the source GeekNews item.
-- [ ] AI usage records are written for successful requests and failed requests when possible.
-- [ ] Estimated cost is calculated from prompt and completion token usage using request-time pricing metadata.
-- [ ] FastAPI exposes endpoints to generate and retrieve GeekNews summaries.
-- [ ] The dashboard can show a stored summary for a GeekNews item.
-- [ ] OpenRouter gateway tests mock HTTP responses and cover success, failure, usage extraction, latency recording, and fallback behavior.
-- [ ] Cost calculation tests cover prompt/completion pricing, missing usage fields, zero-token responses, failed requests, and pricing snapshot persistence.
-- [ ] AI routing tests cover feature-to-model mapping, config override behavior, and actual model string persistence.
+- [x] AI feature and model enums exist for configured OpenRouter routes.
+- [x] OpenRouter calls go through a gateway that normalizes response content, usage, latency, status, errors, and actual model string.
+- [x] Primary and fallback model behavior is implemented according to feature routing config.
+- [x] Historical summary data remains compatible if present.
+- [x] AI usage records are written for successful requests and failed requests when possible.
+- [x] Estimated cost is calculated from prompt and completion token usage using request-time pricing metadata.
+- [x] FastAPI does not expose GeekNews summary endpoints in the default public API surface.
+- [x] Historical stored summaries remain readable outside the default GeekNews dashboard flow.
+- [x] OpenRouter gateway tests mock HTTP responses and cover success, failure, usage extraction, latency recording, and fallback behavior.
+- [x] Cost calculation tests cover prompt/completion pricing, missing usage fields, zero-token responses, failed requests, and pricing snapshot persistence.
+- [x] AI routing tests cover feature-to-model mapping, config override behavior, and actual model string persistence.
 
 ## Implementation decisions
 
@@ -51,8 +51,7 @@ Add OpenRouter-powered summarization for stored GeekNews items, using explicit A
 - Read the OpenRouter API key from `OPENROUTER_API_KEY`.
 - Fetch model pricing from OpenRouter `/api/v1/models` and cache it for roughly one day.
 - Do not block summarization when `/api/v1/models` lookup fails; use local fallback pricing or mark estimated cost unavailable.
-- Store one current summary per GeekNews item; repeated generation upserts and replaces the stored summary for that item.
-- Keep every summarization attempt as a separate AI usage record, even when the stored summary is replaced.
+- Keep historical AI usage records readable, including records from older GeekNews summary experiments.
 
 ## Blocked by
 
