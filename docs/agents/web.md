@@ -13,6 +13,7 @@ Use this when working on the TrendBoda Next.js dashboard, frontend tooling, styl
 
 - Read root `DESIGN-v2.md` before changing dashboard UI, styling, components, icons, or fonts.
 - If `DESIGN-v2.md` does not exist yet, check `.scratch/first-slice/issues/09-create-dashboard-design-system-contract.md` before making visual-system decisions.
+- Read `docs/plan/us-price-snapshot.md` before adding or changing the Price Snapshot dashboard view.
 - Follow `DESIGN-v2.md` for visual-system choices and this file for implementation workflow.
 
 ## Package Manager
@@ -63,6 +64,7 @@ pnpm dlx @google/design.md export --format tailwind DESIGN-v2.md > web/tailwind.
 - TrendBoda is an operational dashboard, not a marketing site.
 - Prefer dense, scannable, quiet layouts for repeated review.
 - Avoid decorative hero sections, unnecessary cards inside cards, and visual effects that do not improve dashboard use.
+- Price Snapshot views should prioritize compact rows, market movement states, last-updated freshness, and manual refresh over auto-refreshing visual noise.
 
 ## Commands
 

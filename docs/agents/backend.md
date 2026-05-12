@@ -9,6 +9,7 @@ Use this when working on the TrendBoda FastAPI backend, Python tests, database m
 - Read `docs/adr/0007-local-development-runs-apps-on-host-with-dockerized-postgres.md` before changing local process topology.
 - Read `.scratch/first-slice/PRD.md` and `docs/plan/first-slice.md` before changing first-slice scope or implementation order.
 - Read `.scratch/scheduled-geeknews-telegram-push/PRD.md` and `docs/plan/geeknews-scheduler.md` before changing scheduled GeekNews collection, scheduler workers, Telegram push, or GeekNews bulk insert behavior.
+- Read `docs/plan/us-price-snapshot.md` before changing US market price providers, Price Snapshot APIs, Watchlist configuration, or Finnhub integration.
 
 ## Project Boundary
 
@@ -94,3 +95,13 @@ dbmate --env-file .env --migrations-dir db/migrations status
 - Base Telegram push on newly inserted GeekNews Signals returned by repository insert behavior, and send each new Signal as its own Telegram message.
 - Keep scheduler failure policy explicit: fetch/parse/DB failures stop push for that run, Telegram message failures are isolated per item, and `run-forever` continues to the next tick.
 - Reuse existing Telegram token, allowed chat ID, sender, and formatting conventions where possible.
+
+## US Price Snapshot Direction
+
+- Start with Finnhub as the US Market Source provider for dashboard Price Snapshots.
+- Limit the MVP to US-listed stocks and ETFs from a fixed owner-configured Watchlist.
+- Keep the fixed Watchlist capped at 20 symbols and shape it so owner-editable add/remove behavior can replace it later.
+- Use Finnhub `/quote`, `/stock/profile2`, and `/stock/market-holiday?exchange=US`; do not use metrics, earnings, news, or websocket streaming in the MVP.
+- Keep Price Snapshot responses deterministic and AI-free.
+- Do not store Price Snapshots in Postgres in the MVP; use in-memory cache with short quote TTL and stale fallback.
+- Keep Telegram price commands, scheduled price pushes, alerts, Korean market coverage, and paid provider integration out of the MVP.

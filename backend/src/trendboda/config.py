@@ -10,6 +10,8 @@ ROOT_DIR = Path(__file__).resolve().parents[3]
 class Settings(BaseSettings):
     database_url: str = Field(default="postgres://trendboda:trendboda@localhost:5432/trendboda")
     openrouter_api_key: str | None = None
+    finnhub_api_key: str | None = None
+    market_watchlist_symbols: str = Field(default="AAPL,NVDA,TSLA")
     telegram_bot_token: str | None = None
     telegram_allowed_chat_ids: str = ""
     ai_monthly_budget_usd: str = Field(default="10.00")
@@ -31,6 +33,14 @@ class Settings(BaseSettings):
             for raw_chat_id in raw_value.split(",")
             if raw_chat_id.strip()
         }
+
+    @property
+    def market_watchlist_symbol_list(self) -> list[str]:
+        return [
+            raw_symbol.strip().upper()
+            for raw_symbol in self.market_watchlist_symbols.split(",")
+            if raw_symbol.strip()
+        ]
 
 
 @lru_cache
