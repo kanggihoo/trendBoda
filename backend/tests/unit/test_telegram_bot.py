@@ -6,7 +6,6 @@ import respx
 from httpx import Response
 
 from trendboda.geeknews import StoredGeekNewsItem
-from trendboda.repositories import GeekNewsSummary
 from trendboda.telegram_bot import (
     GeekNewsTelegramItem,
     TelegramInteractiveBot,
@@ -33,17 +32,6 @@ class FakeGeekNewsRepository:
                 fetched_at=datetime(2026, 5, 9, 10, 5, tzinfo=UTC),
             )
         ][:limit]
-
-    async def get_summary(self, *, item_id: int) -> GeekNewsSummary | None:
-        if item_id != 1:
-            return None
-        return GeekNewsSummary(
-            item_id=1,
-            summary="Existing stored summary",
-            model="openai/gpt-4.1-nano",
-            generated_at=datetime(2026, 5, 9, 10, 6, tzinfo=UTC),
-        )
-
 
 class FakeRepositories:
     def __init__(self) -> None:
@@ -115,7 +103,7 @@ def test_format_geeknews_message_is_concise_and_mobile_friendly() -> None:
             GeekNewsTelegramItem(
                 title="Stored signal",
                 source_url="https://news.example.com/1",
-                summary="Existing stored summary",
+                content_text="Stored item body",
             )
         ]
     )
@@ -123,7 +111,7 @@ def test_format_geeknews_message_is_concise_and_mobile_friendly() -> None:
     assert message == (
         "Recent Developer Trend Source signals\n"
         "1. Stored signal\n"
-        "Existing stored summary\n"
+        "Stored item body\n"
         "https://news.example.com/1"
     )
 
@@ -174,7 +162,7 @@ async def test_interactive_bot_logs_chat_id_when_allowlist_is_empty(caplog) -> N
 
 
 @pytest.mark.asyncio
-async def test_geeknews_command_returns_recent_signals_with_summary_and_link() -> None:
+async def test_geeknews_command_returns_recent_signals_with_text_and_link() -> None:
     bot = TelegramInteractiveBot(allowed_chat_ids={123456789}, repositories=FakeRepositories())
 
     result = await bot.handle_update(
@@ -191,7 +179,7 @@ async def test_geeknews_command_returns_recent_signals_with_summary_and_link() -
         "text": (
             "Recent Developer Trend Source signals\n"
             "1. Stored signal\n"
-            "Existing stored summary\n"
+            "Stored item body\n"
             "https://news.example.com/1"
         ),
     }

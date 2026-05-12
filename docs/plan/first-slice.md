@@ -5,10 +5,10 @@ The first TrendBoda implementation slice validates the core loop before market d
 ## Scope
 
 - Fetch and parse GeekNews RSS from `https://feeds.feedburner.com/geeknews-feed`
-- Store GeekNews items with duplicate prevention
-- Summarize selected items through OpenRouter
+- Store GeekNews Signals with duplicate prevention
+- Keep OpenRouter-backed AI foundation available outside the default GeekNews flow
 - Track OpenRouter usage, estimated cost, latency, status, model, and feature
-- Show GeekNews items and summaries in the web dashboard
+- Show GeekNews Signals and source links in the web dashboard
 - Show OpenRouter cost data in the web dashboard
 - Support Telegram `/geeknews` and `/cost`
 - Run locally with Dockerized Postgres, uv-managed host-run FastAPI, and host-run Next.js
@@ -29,7 +29,7 @@ The first TrendBoda implementation slice validates the core loop before market d
 2. Add dbmate migrations for GeekNews items and AI usage.
 3. Implement GeekNews RSS provider adapter.
 4. Implement OpenRouter adapter with AI feature/model routing.
-5. Persist summaries and AI usage records.
-6. Add API endpoints for GeekNews items, summaries, and AI cost metrics.
+5. Persist AI usage records for future AI-backed features.
+6. Add API endpoints for GeekNews Signals and AI cost metrics.
 7. Build dashboard pages for GeekNews and AI cost.
 8. Add Telegram commands for `/geeknews` and `/cost`.

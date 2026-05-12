@@ -51,9 +51,7 @@ function GeekNewsSignalRow({ item }: { item: GeekNewsItem }) {
         >
           {item.title}
         </a>
-        {item.summary?.summary ? (
-          <p className="max-w-[680px] text-body-sm text-ink-muted">{item.summary.summary}</p>
-        ) : null}
+        <p className="max-w-[680px] text-body-sm text-ink-muted">{item.content_text}</p>
       </div>
       <div
         className="grid gap-xs text-left sm:justify-items-end sm:text-right"

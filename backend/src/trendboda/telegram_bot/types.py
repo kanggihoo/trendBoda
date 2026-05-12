@@ -3,20 +3,17 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from trendboda.geeknews import StoredGeekNewsItem
-from trendboda.repositories import GeekNewsSummary
 
 
 @dataclass(frozen=True)
 class GeekNewsTelegramItem:
     title: str
     source_url: str
-    summary: str | None
+    content_text: str
 
 
 class TelegramGeekNewsRepository(Protocol):
     async def list_recent_items(self, *, limit: int) -> list[StoredGeekNewsItem]: ...
-
-    async def get_summary(self, *, item_id: int) -> GeekNewsSummary | None: ...
 
 
 class TelegramAIUsageRepository(Protocol):

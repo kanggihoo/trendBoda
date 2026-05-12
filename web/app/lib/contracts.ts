@@ -1,17 +1,10 @@
-export type GeekNewsSummary = {
-  item_id: number;
-  summary: string;
-  model: string;
-  generated_at: string;
-};
-
 export type GeekNewsItem = {
   id: number;
   title: string;
   source_url: string;
+  content_text: string;
   published_at: string | null;
   fetched_at: string;
-  summary: GeekNewsSummary | null;
 };
 
 export type GeekNewsResponse = {

@@ -177,8 +177,18 @@ if (!geeknewsList.includes("Published") || !geeknewsList.includes("Fetched")) {
   throw new Error("Dashboard shell must show both publish time and fetch time.");
 }
 
-if (!geeknewsList.includes("item.summary?.summary")) {
-  throw new Error("Dashboard shell must show stored GeekNews summaries when present.");
+if (!contracts.includes("content_text: string")) {
+  throw new Error("GeekNewsItem contract must include GeekNews Signal short description.");
+}
+
+if (!geeknewsList.includes("item.content_text")) {
+  throw new Error("Dashboard shell must show GeekNews Signal short descriptions.");
+}
+
+for (const summaryUiToken of ["item.summary", "summary-runs", "Generate summary"]) {
+  if (geeknewsList.includes(summaryUiToken)) {
+    throw new Error("GeekNews dashboard owner flow must not render summary UI.");
+  }
 }
 
 for (const dashboardText of [

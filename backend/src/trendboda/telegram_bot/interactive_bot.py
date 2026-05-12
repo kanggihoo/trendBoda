@@ -83,12 +83,11 @@ class TelegramInteractiveBot:
 
         telegram_items: list[GeekNewsTelegramItem] = []
         for item in items:
-            summary = await self._repositories.geeknews.get_summary(item_id=item.id)
             telegram_items.append(
                 GeekNewsTelegramItem(
                     title=item.title,
                     source_url=item.source_url,
-                    summary=summary.summary if summary is not None else None,
+                    content_text=item.content_text,
                 )
             )
         return format_geeknews_message(telegram_items)

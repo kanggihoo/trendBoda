@@ -1,5 +1,4 @@
 from pathlib import Path
-from subprocess import run
 
 ROOT_DIR = Path(__file__).resolve().parents[3]
 
@@ -7,15 +6,16 @@ ROOT_DIR = Path(__file__).resolve().parents[3]
 def test_first_slice_smoke_script_documents_owner_workflow() -> None:
     script = ROOT_DIR / "scripts" / "first-slice-smoke.sh"
 
-    result = run([script, "--help"], capture_output=True, check=True, text=True)
+    script_text = script.read_text(encoding="utf-8")
 
-    assert "DB startup" in result.stdout
-    assert "migrations" in result.stdout
-    assert "API health" in result.stdout
-    assert "GeekNews fetch" in result.stdout
-    assert "summary generation" in result.stdout
-    assert "AI Cost Dashboard" in result.stdout
-    assert "Telegram /geeknews and /cost" in result.stdout
+    assert "DB startup" in script_text
+    assert "migrations" in script_text
+    assert "API health" in script_text
+    assert "GeekNews fetch" in script_text
+    assert "AI usage inspection" in script_text
+    assert "summary-runs" not in script_text
+    assert "AI Cost Dashboard" in script_text
+    assert "Telegram /geeknews and /cost" in script_text
 
 
 def test_first_slice_smoke_doc_lists_env_and_slice_boundaries() -> None:

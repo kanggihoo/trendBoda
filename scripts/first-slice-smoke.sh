@@ -17,18 +17,16 @@ First-slice smoke workflow:
   4. web startup: pnpm --dir web dev
   5. API health: GET /health
   6. GeekNews fetch: POST /geeknews/fetch-runs
-  7. summary generation: POST /geeknews/items/{id}/summary-runs
-  8. AI usage recording: GET /ai/cost/summary and /ai/cost/requests
-  9. AI Cost Dashboard: open http://127.0.0.1:3000
-  10. Telegram /geeknews and /cost: run bot polling or unit-format checks
+  7. AI usage inspection: GET /ai/cost/summary and /ai/cost/requests
+  8. AI Cost Dashboard: open http://127.0.0.1:3000
+  9. Telegram /geeknews and /cost: run bot polling or unit-format checks
 
-Live mode requires DATABASE_URL and OPENROUTER_API_KEY in .env.
-Mocked mode (--mocked) skips live GeekNews fetch, OpenRouter summary generation, and Telegram secrets.
+Live mode requires DATABASE_URL in .env.
+Mocked mode (--mocked) skips live GeekNews fetch and Telegram secrets.
 
 Environment:
   API_BASE_URL defaults to http://127.0.0.1:8000
   WEB_BASE_URL defaults to http://127.0.0.1:3000
-  SMOKE_GEEKNEWS_ITEM_ID can force summary target item id.
 USAGE
 }
 
@@ -110,9 +108,6 @@ require_command pnpm
 require_command python3
 require_env_file
 require_env_value DATABASE_URL
-if [[ "$MODE" == "live" ]]; then
-  require_env_value OPENROUTER_API_KEY
-fi
 
 docker compose ps postgres --status running | grep -q postgres \
   || fail "local Postgres is not running; run: docker compose up -d postgres"
@@ -137,23 +132,13 @@ else
 fi
 
 http_json GET "$API_BASE_URL/geeknews/items" "$tmp_dir/items.json"
-item_id="${SMOKE_GEEKNEWS_ITEM_ID:-}"
-if [[ -z "$item_id" ]]; then
-  item_id="$(json_read "$tmp_dir/items.json" "items.0.id" 2>/dev/null || true)"
-fi
+item_id="$(json_read "$tmp_dir/items.json" "items.0.id" 2>/dev/null || true)"
 [[ -n "$item_id" ]] || fail "no GeekNews items available; run live fetch or seed local DB"
 pass "GeekNews item availability"
 
-if [[ "$MODE" == "live" ]]; then
-  http_json POST "$API_BASE_URL/geeknews/items/$item_id/summary-runs" "$tmp_dir/summary.json"
-  pass "summary generation"
-else
-  printf 'skip: summary generation in mocked mode\n'
-fi
-
 http_json GET "$API_BASE_URL/ai/cost/summary" "$tmp_dir/cost-summary.json"
 http_json GET "$API_BASE_URL/ai/cost/requests?limit=1" "$tmp_dir/cost-requests.json"
-pass "AI usage recording endpoints"
+pass "AI usage inspection endpoints"
 
 web_status="$(curl -sS -o "$tmp_dir/web.html" -w "%{http_code}" "$WEB_BASE_URL" || true)"
 [[ "$web_status" =~ ^2 ]] || fail "web dashboard unavailable at $WEB_BASE_URL; run: pnpm --dir web dev"
@@ -163,7 +148,7 @@ uv --directory backend run python - <<'PY'
 from trendboda.telegram_bot import format_cost_message, format_geeknews_message, GeekNewsTelegramItem
 
 geeknews = format_geeknews_message([
-    GeekNewsTelegramItem(title="Smoke signal", source_url="https://example.com", summary="Short summary")
+    GeekNewsTelegramItem(title="Smoke signal", source_url="https://example.com", content_text="Short signal")
 ])
 cost = format_cost_message(
     {

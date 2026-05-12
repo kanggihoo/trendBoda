@@ -33,8 +33,12 @@ The first provider adapter used to collect items from a Developer Trend Source.
 _Avoid_: Developer Trend Source, Geek news
 
 **GeekNews Item Content**:
-Raw HTML body from a GeekNews entry that may later be rendered, sanitized, or summarized.
+Raw HTML body from a GeekNews entry that may later be rendered or sanitized.
 _Avoid_: Rendered text, summary, excerpt
+
+**GeekNews Signal**:
+A developer-trend signal collected from GeekNews for quick scanning and source-link navigation.
+_Avoid_: AI summary, AI preview note, report
 
 **Signal**:
 A source item or market change that is worth showing to the owner.
@@ -84,12 +88,18 @@ _Avoid_: Grafana dashboard, billing page
 A deterministic view of current or recent asset prices without AI-generated explanation.
 _Avoid_: Analysis, summary
 
+**Done Work Item**:
+A PRD or issue whose acceptance criteria have been implemented and accepted as complete.
+_Avoid_: Completed, closed, finished
+
 ## Relationships
 
 - **TrendBoda** has exactly one **Owner**
 - An **Owner** configures one or more **Sources**
 - A **Source** may be a **Market Source**, **Disclosure Source**, or **Developer Trend Source**
 - A **GeekNews Provider** collects items for a **Developer Trend Source**
+- A **GeekNews Provider** produces **GeekNews Signals**
+- A **GeekNews Signal** is normally reviewed through dashboard or **Interactive Bot** links without AI-generated explanation
 - A **Signal** is delivered through either a **Routine Briefing** or an **Urgent Alert**
 - Most **Signals** are delivered through **Routine Briefings**
 - A **Commute Briefing** is a **Routine Briefing** focused on major news
@@ -101,6 +111,7 @@ _Avoid_: Analysis, summary
 - A **Market Question** may produce **Investment Analysis**, but not direct buy or sell instructions
 - The **AI Cost Dashboard** groups OpenRouter usage by date, model, feature, request, and monthly budget progress
 - A **Price Snapshot** does not use AI unless the owner asks for explanation or analysis
+- A PRD or issue uses `Status: done` when it becomes a **Done Work Item**
 
 ## Example dialogue
 
@@ -121,12 +132,17 @@ _Avoid_: Analysis, summary
 >
 > **Dev:** "Should every price message include AI-generated reasons?"
 > **Domain expert:** "No. A **Price Snapshot** should avoid AI cost and only show deterministic price data unless the **Owner** asks for analysis."
+>
+> **Dev:** "Should every **GeekNews Signal** be summarized with OpenRouter?"
+> **Domain expert:** "No. GeekNews already provides enough title, description, and source links for scanning; OpenRouter remains available for other AI-backed TrendBoda features."
 
 ## Flagged ambiguities
 
+- "GeekNews summary" implied automatic AI summarization -- resolved: GeekNews uses **GeekNews Signals** for scanning and link navigation; OpenRouter-backed AI remains available outside the default GeekNews flow.
 - "AI assistant" was too broad — resolved: this product is **TrendBoda**, focused on monitored information signals, summaries, and alerts.
 - "subscription" was too broad — resolved: use **Source** for anything the system checks repeatedly.
 - "notification" was too broad — resolved: use **Routine Briefing** for scheduled summaries and **Urgent Alert** for exceptional immediate messages.
 - "Telegram bot" was ambiguous — resolved: use **Interactive Bot** when the owner can ask for information, not only receive messages.
 - "investment advice" was too broad and risky — resolved: use **Investment Analysis** for evidence-backed explanations without buy or sell instructions.
 - "GeekNews" was ambiguous — resolved: use **GeekNews Provider** for the adapter and **Developer Trend Source** for the domain concept.
+- "completed", "closed", and "finished" were ambiguous issue tracker states — resolved: use `Status: done` for completed PRDs and issues.

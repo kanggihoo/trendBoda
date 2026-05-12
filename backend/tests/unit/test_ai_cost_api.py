@@ -74,7 +74,7 @@ class GroupedAIUsageRepository(FakeAIUsageRepository):
         ]
         summary["by_feature"] = [
             {
-                "feature": "geeknews_summary",
+                "feature": "market_question",
                 "estimated_cost_usd": "0.001",
                 "request_count": 1,
                 "average_latency_ms": 120,
@@ -145,7 +145,7 @@ def test_ai_cost_summary_returns_typed_group_fields() -> None:
         "request_count": 1,
         "average_latency_ms": 120,
         "failure_count": 0,
-        "feature": "geeknews_summary",
+        "feature": "market_question",
     }
 
 

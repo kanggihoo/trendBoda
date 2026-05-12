@@ -3,7 +3,7 @@ import { GeekNewsList } from "./geeknews-list";
 
 const checks = [
   "GeekNews source collection",
-  "OpenRouter summary usage",
+  "OpenRouter usage records",
   "AI cost dashboard",
   "Interactive Bot commands",
 ];
@@ -17,7 +17,7 @@ export default function Home() {
           TrendBoda
         </h1>
         <p className="max-w-[620px] text-body text-ink-muted">
-          Developer Trend Source signals, summaries, and OpenRouter cost tracking will appear
+          Developer Trend Source signals, source links, and OpenRouter cost tracking will appear
           here as first-slice capabilities land.
         </p>
       </section>

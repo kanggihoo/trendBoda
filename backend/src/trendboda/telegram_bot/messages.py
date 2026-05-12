@@ -11,8 +11,7 @@ def format_geeknews_message(items: list[GeekNewsTelegramItem]) -> str:
     lines = ["Recent Developer Trend Source signals"]
     for index, item in enumerate(items, start=1):
         lines.append(f"{index}. {item.title}")
-        if item.summary is not None:
-            lines.append(item.summary)
+        lines.append(item.content_text)
         lines.append(item.source_url)
     return "\n".join(lines)
 

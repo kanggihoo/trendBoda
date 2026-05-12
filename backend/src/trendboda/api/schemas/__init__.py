@@ -12,7 +12,6 @@ from trendboda.api.schemas.geeknews import (
     GeekNewsFetchResponse,
     GeekNewsItemResponse,
     GeekNewsItemsResponse,
-    GeekNewsSummaryResponse,
 )
 
 __all__ = [
@@ -27,5 +26,4 @@ __all__ = [
     "GeekNewsFetchResponse",
     "GeekNewsItemResponse",
     "GeekNewsItemsResponse",
-    "GeekNewsSummaryResponse",
 ]

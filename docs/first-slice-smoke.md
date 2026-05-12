@@ -2,7 +2,7 @@
 
 This workflow proves the local TrendBoda first slice as one coherent Owner loop:
 Dockerized Postgres, dbmate migrations, host-run FastAPI, host-run Next.js,
-GeekNews collection, OpenRouter summary generation, AI Cost Dashboard visibility,
+GeekNews Signal collection, AI Cost Dashboard visibility,
 and Interactive Bot command formatting.
 
 ## Fresh Checkout Setup
@@ -61,7 +61,7 @@ item before using mocked mode.
 - FastAPI `/health` returns `status=ok`.
 - Live mode can call `POST /geeknews/fetch-runs`.
 - `GET /geeknews/items` returns at least one item.
-- Live mode can call `POST /geeknews/items/{id}/summary-runs`.
+- Live mode does not require or expose GeekNews summary generation.
 - AI usage endpoints respond through `/ai/cost/summary` and `/ai/cost/requests`.
 - Web dashboard responds at `WEB_BASE_URL`, including AI Cost Dashboard API connectivity.
 - Telegram `/geeknews` and `/cost` formatting remains callable without live Telegram.
@@ -71,7 +71,7 @@ item before using mocked mode.
 Required for live smoke:
 
 - `DATABASE_URL`: Postgres URL used by FastAPI and dbmate.
-- `OPENROUTER_API_KEY`: required for live summary generation.
+- `OPENROUTER_API_KEY`: not required for the GeekNews Signal smoke path; set it only when manually exercising future AI-backed endpoints.
 
 Required only for live Telegram polling:
 
@@ -83,8 +83,6 @@ Useful local overrides:
 - `NEXT_PUBLIC_API_BASE_URL`: web dashboard API base URL. Use `http://127.0.0.1:8000` locally.
 - `API_BASE_URL`: smoke script API URL. Defaults to `http://127.0.0.1:8000`.
 - `WEB_BASE_URL`: smoke script web URL. Defaults to `http://127.0.0.1:3000`.
-- `SMOKE_GEEKNEWS_ITEM_ID`: force the item used for summary generation.
-
 Can be omitted in no-network/mocked mode:
 
 - `OPENROUTER_API_KEY`
@@ -95,7 +93,7 @@ Can be omitted in no-network/mocked mode:
 
 - Missing `.env` fails with instruction to copy `.env.example`.
 - Missing `DATABASE_URL` fails before contacting services.
-- Missing `OPENROUTER_API_KEY` fails in live mode before summary generation.
+- Missing `OPENROUTER_API_KEY` does not block the GeekNews Signal smoke path.
 - Stopped local Postgres fails with `docker compose up -d postgres`.
 - Pending migrations fail with the exact dbmate migration command.
 - Stopped FastAPI fails on `/health`.
@@ -104,8 +102,7 @@ Can be omitted in no-network/mocked mode:
 
 ## First-Slice Boundaries
 
-In scope: GeekNews as Developer Trend Source, OpenRouter summarization, AI cost
-tracking, dashboard inspection, and Interactive Bot `/geeknews` plus `/cost`.
+In scope: GeekNews as Developer Trend Source producing GeekNews Signals for scanning and link navigation, OpenRouter foundation and AI cost tracking for future AI-backed features, dashboard inspection, and Interactive Bot `/geeknews` plus `/cost`.
 
 Out of scope:
 
